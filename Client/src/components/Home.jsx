@@ -20,7 +20,7 @@ const Home = () => {
     <Wrapper>
       <Header type="header" />
       <Slogan />
-      <Slider heading="Trending Now" type="home" />
+      <Slider heading="Trending Now" />
       <Header />
       <IconicSlider />
       <Essentials />

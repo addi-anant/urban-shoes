@@ -21,14 +21,15 @@ const growHorizontal = keyframes`
 `;
 
 const Container = styled.div`
-  width: ${(props) => (props.typing === true ? "100%" : "94%")};
+  width: ${(props) => (props.typing === "true" ? "100%" : "94%")};
   display: flex;
-  align-items: ${(props) => (props.typing === true ? "flex-start" : "center")};
+  align-items: ${(props) =>
+    props.typing === "true" ? "flex-start" : "center"};
   justify-content: space-between;
-  margin: ${(props) => (props.typing === true ? "0px" : "10px")};
-  height: ${(props) => (props.typing === true ? "300px" : "max-content")};
-  position: ${(props) => (props.typing === true ? "fixed" : "relative")};
-  padding-top: ${(props) => (props.typing === true ? "10px" : "0px")};
+  margin: ${(props) => (props.typing === "true" ? "0px" : "10px")};
+  height: ${(props) => (props.typing === "true" ? "300px" : "max-content")};
+  position: ${(props) => (props.typing === "true" ? "fixed" : "relative")};
+  padding-top: ${(props) => (props.typing === "true" ? "10px" : "0px")};
   top: 0px;
   left: 0px;
   right: 0px;
@@ -36,30 +37,31 @@ const Container = styled.div`
   z-index: 10;
 
   animation-name: ${(props) =>
-    props.typing === true
+    props.typing === "true"
       ? css`
           ${growHorizontal}
         `
       : ""};
 
-  animation-duration: ${(props) => (props.typing === true ? "1s" : "")};
+  animation-duration: ${(props) => (props.typing === "true" ? "1s" : "")};
 `;
 
 const Img = styled.img`
   height: 40px;
   width: 60px;
   object-fit: contain;
-  margin-left: ${(props) => (props.typing === true ? "10px" : "0px")};
+  margin-left: ${(props) => (props.typing === "true" ? "10px" : "0px")};
 `;
 
 const UtilityContainer = styled.div`
   display: relative;
   height: 100%;
   display: flex;
-  align-items: ${(props) => (props.typing === true ? "flex-start" : "center")};
+  align-items: ${(props) =>
+    props.typing === "true" ? "flex-start" : "center"};
   justify-content: flex-end;
   gap: 18px;
-  width: ${(props) => (props.typing === true ? "100%" : "max-content")};
+  width: ${(props) => (props.typing === "true" ? "100%" : "max-content")};
 `;
 
 const growVertical = keyframes`
@@ -71,7 +73,7 @@ const SearchWrapper = styled.div`
   /* border: 1px solid red; */
 
   height: 25px;
-  width: ${(props) => (props.typing === true ? "90%" : "max-content")};
+  width: ${(props) => (props.typing === "true" ? "90%" : "max-content")};
   display: flex;
   align-items: center;
   border: 1px solid black;
@@ -88,7 +90,7 @@ const SearchWrapper = styled.div`
   }
 
   animation-name: ${(props) =>
-    props.typing === true
+    props.typing === "true"
       ? css`
           ${growVertical}
         `
@@ -129,18 +131,20 @@ const Navbar = () => {
 
   return (
     <Wrapper>
-      <Container typing={isTyping}>
+      <Container typing={isTyping.toString()}>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <Img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/320px-Logo_NIKE.svg.png"
-            typing={isTyping}
+            typing={isTyping.toString()}
           />
         </Link>
-        <UtilityContainer typing={isTyping}>
+        <UtilityContainer typing={isTyping.toString()}>
           {width <= 480 ? (
             <Search style={{ transform: "scale(1.2)", cursor: "pointer" }} />
           ) : (
-            <SearchWrapper typing={isTyping} onClick={() => setIsTyping(true)}>
+            <SearchWrapper
+              typing={isTyping.toString()}
+              onClick={() => setIsTyping(true)}>
               <Search style={{ transform: "scale(1.2)" }} />
               <Input placeholder="Search" />
             </SearchWrapper>

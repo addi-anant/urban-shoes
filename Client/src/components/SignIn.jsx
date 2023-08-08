@@ -4,17 +4,10 @@ import { useFormik } from "formik";
 import { SignupSchema } from "../formSchema";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 
+import { Link, useNavigate } from "react-router-dom";
 import { Google } from "@mui/icons-material";
-
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { app } from "../config/firebase.config";
-import { validateUserJWTToken } from "../api";
-import { Link } from "react-router-dom";
+import { login } from "../utils/authentication";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div`
   width: 100%;
@@ -74,7 +67,7 @@ const InputBlock = styled.div`
   flex-direction: column;
   padding: 10px 10px 8px;
   border: 1px solid #ddd;
-  &:nth-child(${(props) => props.child}) {
+  &:nth-child(${(props) => props.number}) {
     outline: 2px solid red;
   }
 `;
@@ -206,53 +199,22 @@ const SignIn = () => {
     password: "",
   };
 
-  console.log(error);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues,
       validationSchema: SignupSchema,
       onSubmit: (values, action) => {
+        const { email, password } = values;
+
+        // Make API Call here:
+        login(email, password, navigate, dispatch);
+
         action.resetForm();
       },
     });
-  console.log(errors);
-
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-
-  const signInWithGoogle = async () => {
-    await signInWithPopup(auth, provider).then((userCredentials) => {
-      auth.onAuthStateChanged((credentials) => {
-        console.log(credentials); // our task is done here only.
-        credentials.getIdToken().then((token) => {
-          validateUserJWTToken(token).then((data) => {
-            console.log(data);
-            // save user information in the database, only if no user with provided email already exists.
-            // you have entire user data here, from Google => save it in redux and then redirect to the home page of the app.
-          });
-        });
-      });
-    });
-  };
-
-  const signInWithEmailAndPasswordHandler = () => {
-    const { name, email, password } = values;
-    signInWithEmailAndPassword(auth, email, password)
-      .then((credentials) => {
-        const user = credentials.user;
-        console.log(user);
-
-        const jwtToken = user.accessToken;
-        console.log(jwtToken);
-        // you have entire user data here with JWT token, from Google => save it in both redux and database and then redirect to the home page of the app.
-      })
-      .catch((error) => {
-        if (error.message === "Firebase: Error (auth/invalid-email).") {
-          setError("Please fill all fields.");
-        }
-      });
-  };
 
   return (
     <>
@@ -262,7 +224,7 @@ const SignIn = () => {
             <Title>Welcome!</Title>
             <Form onSubmit={handleSubmit}>
               {/* Email: */}
-              <InputBlock child={errors.email && touched.email ? 1 : null}>
+              <InputBlock number={errors.email && touched.email ? 1 : null}>
                 <Label>Email</Label>
                 <Input
                   type="email"
@@ -278,7 +240,7 @@ const SignIn = () => {
 
               {/* Password: */}
               <InputBlock
-                child={errors.password && touched.password ? 2 : null}>
+                number={errors.password && touched.password ? 2 : null}>
                 <Label>Password</Label>
                 <Input
                   type="password"
@@ -293,9 +255,7 @@ const SignIn = () => {
               </InputBlock>
 
               {/* Submit Button */}
-              <Button onClick={signInWithEmailAndPasswordHandler}>
-                Sign up
-              </Button>
+              <Button>Sign up</Button>
             </Form>
             <SignUp>
               Already have an account?{" "}
@@ -311,7 +271,7 @@ const SignIn = () => {
               <Or>OR</Or>
             </PartitionWrapper>
 
-            <GoogleAuthWrapper onClick={signInWithGoogle}>
+            <GoogleAuthWrapper>
               <Google style={{ color: "#16FF00", transform: "scale(1.2)" }} />
               <AuthText>Sign In with Google.</AuthText>
             </GoogleAuthWrapper>

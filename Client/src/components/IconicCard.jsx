@@ -31,7 +31,7 @@ const IconicCard = ({ info }) => {
   return (
     <>
       <Link
-        to={`/product/${info?.id}`}
+        to={`/product/${info?._id}`}
         style={{ textDecoration: "none", color: "inherit" }}>
         <Container>
           <ImgContainer>

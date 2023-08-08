@@ -1,6 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
+import { logout } from "../utils/authentication";
+import { useDispatch, useSelector } from "react-redux";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -34,7 +36,9 @@ const Text = styled.p`
 `;
 
 const Strip = () => {
-  const user = false;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((store) => store.user.user);
 
   return (
     <Wrapper>
@@ -60,7 +64,10 @@ const Strip = () => {
           </Container>
         ) : (
           <Container>
-            <Text> addi_anant01 </Text>
+            <Text> {user?.name} </Text>
+            <Text> | </Text>
+
+            <Text onClick={() => logout(navigate, dispatch)}> Logout </Text>
           </Container>
         )}
       </OuterContainer>

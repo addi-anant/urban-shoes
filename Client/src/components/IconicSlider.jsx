@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { styled } from "styled-components";
-import SliderCard from "./SliderCard";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import IconicCard from "./IconicCard";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "../utils/axiosInstance";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -90,6 +91,13 @@ const Button = styled.div`
 
 const IconicSlider = () => {
   // make an API call based upon the slider component is called from Home or Product.
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["iconic"],
+    queryFn: async () => {
+      const response = await axiosInstance.get("/product");
+      return response.data;
+    },
+  });
 
   const info = {
     id: 1,
@@ -160,16 +168,9 @@ const IconicSlider = () => {
             </Button>
           )}
           <SliderWrapper ref={ref}>
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
-            <IconicCard info={info} />
+            {data?.map((info) => (
+              <IconicCard key={info?._id} info={info} />
+            ))}
           </SliderWrapper>
           {width > 660 && (
             <Button dir="right" onClick={() => handleScroll("right")}>

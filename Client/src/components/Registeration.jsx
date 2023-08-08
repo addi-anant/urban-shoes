@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useFormik } from "formik";
+import { Formik, useFormik } from "formik";
 import { RegisterationSchema } from "../formSchema";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 
+import { Link, useNavigate } from "react-router-dom";
 import { Google } from "@mui/icons-material";
-
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
-import { app } from "../config/firebase.config";
-import { validateUserJWTToken } from "../api";
-import { Link } from "react-router-dom";
+import { register } from "../utils/authentication";
 
 const Container = styled.div`
   width: 100%;
@@ -207,6 +199,7 @@ const Registration = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  /* Form Validation: */
   const initialValues = {
     name: "",
     email: "",
@@ -214,166 +207,110 @@ const Registration = () => {
     confirm_password: "",
   };
 
-  const [error, setError] = useState(null);
-
-  console.log(error);
+  const navigate = useNavigate();
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues,
       validationSchema: RegisterationSchema,
       onSubmit: (values, action) => {
-        console.log(
-          "🚀 ~ file: Registration.jsx ~ line 11 ~ Registration ~ values",
-          values
-        );
+        const { name, email, password } = values;
+
+        // Make API Call here:
+        register(name, email, password, navigate);
+
         action.resetForm();
       },
     });
-  console.log(
-    "🚀 ~ file: Registration.jsx ~ line 25 ~ Registration ~ errors",
-    errors
-  );
-  console.log(values);
-
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-
-  const signInWithGoogle = async () => {
-    await signInWithPopup(auth, provider).then((userCredentials) => {
-      auth.onAuthStateChanged((credentials) => {
-        credentials.getIdToken().then((token) => {
-          validateUserJWTToken(token).then((data) => {
-            console.log(data);
-            // save user information in the database, only if no user with provided email already exists.
-            // you have entire user data here, from Google => save it in redux and then redirect to the home page of the app.
-          });
-        });
-      });
-    });
-  };
-
-  const signUpWithEmailAndPasswordHandler = () => {
-    const { name, email, password } = values;
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((credentials) => {
-        const user = credentials.user;
-        console.log(user);
-
-        const jwtToken = user.accessToken;
-        // you have entire user data here with JWT token, from Google => save it in both redux and database and then redirect to the home page of the app.
-      })
-      .catch((error) => {
-        if (error.message === "Firebase: Error (auth/invalid-email).") {
-          setError("Please fill all fields.");
-        }
-        if (error.message === "Firebase: Error (auth/email-already-in-use).") {
-          setError("Provided email is already in use.");
-        }
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
-  };
 
   return (
-    <>
-      <Container>
-        <Wrapper>
-          <Left>
-            <Title>Welcome!</Title>
-            <Form onSubmit={handleSubmit}>
-              {/* Name: */}
-              <InputBlock child={errors.name && touched.name ? 1 : null}>
-                <Label htmlFor="name" className="input-label">
-                  Name
-                </Label>
+    <Container>
+      <Wrapper>
+        <Left>
+          <Title>Welcome!</Title>
 
-                <Input
-                  type="name"
-                  autoComplete="off"
-                  name="name"
-                  id="name"
-                  placeholder="Name"
-                  value={values.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {/* {errors.name && touched.name ? (
-                  <FormError>{errors.name}</FormError>
-                ) : null} */}
-              </InputBlock>
+          <Form onSubmit={handleSubmit}>
+            {/* Name: */}
+            <InputBlock child={errors.name && touched.name ? 1 : null}>
+              <Label htmlFor="name" className="input-label">
+                Name
+              </Label>
 
-              {/* Email: */}
-              <InputBlock child={errors.email && touched.email ? 2 : null}>
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  autoComplete="off"
-                  name="email"
-                  id="email"
-                  placeholder="Email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {/* {errors.email && touched.email ? (
-                  <FormError>{errors.email}</FormError>
-                ) : null} */}
-              </InputBlock>
+              <Input
+                type="name"
+                autoComplete="off"
+                name="name"
+                id="name"
+                placeholder="Name"
+                value={values.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </InputBlock>
 
-              {/* Password: */}
-              <InputBlock
-                child={errors.password && touched.password ? 3 : null}>
-                <Label>Password</Label>
-                <Input
-                  type="password"
-                  autoComplete="off"
-                  name="password"
-                  id="password"
-                  placeholder="Password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {/* {errors.password && touched.password ? (
-                  <FormError>{errors.password}</FormError>
-                ) : null} */}
-              </InputBlock>
+            {/* Email: */}
+            <InputBlock child={errors.email && touched.email ? 2 : null}>
+              <Label>Email</Label>
+              <Input
+                type="email"
+                autoComplete="off"
+                name="email"
+                id="email"
+                placeholder="Email"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </InputBlock>
 
-              {/* Submit Button */}
-              <Button onClick={signUpWithEmailAndPasswordHandler}>
-                Registration
-              </Button>
-            </Form>
+            {/* Password: */}
+            <InputBlock child={errors.password && touched.password ? 3 : null}>
+              <Label>Password</Label>
+              <Input
+                type="password"
+                autoComplete="off"
+                name="password"
+                id="password"
+                placeholder="Password"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </InputBlock>
 
-            <SignUp>
-              Already have an account?{" "}
-              <Link
-                style={{ textDecoration: "none", color: "inherit" }}
-                to="/signin">
-                Sign In
-              </Link>
-            </SignUp>
+            {/* Submit Button */}
+            <Button type="submit" onClick={handleSubmit}>
+              Registration
+            </Button>
+          </Form>
 
-            <PartitionWrapper>
-              {/* <Divider /> */}
-              <Or>OR</Or>
-            </PartitionWrapper>
+          <SignUp>
+            Already have an account?{" "}
+            <Link
+              style={{ textDecoration: "none", color: "inherit" }}
+              to="/signin">
+              Sign In
+            </Link>
+          </SignUp>
 
-            <GoogleAuthWrapper onClick={signInWithGoogle}>
-              <Google style={{ color: "#16FF00", transform: "scale(1.2)" }} />
-              <AuthText>Sign up with Google.</AuthText>
-            </GoogleAuthWrapper>
-          </Left>
-          <Right>
-            <Img
-              src="https://images.unsplash.com/photo-1556906781-9a412961c28c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80"
-              alt=""
-            />
-          </Right>
-        </Wrapper>
-      </Container>
-    </>
+          <PartitionWrapper>
+            {/* <Divider /> */}
+            <Or>OR</Or>
+          </PartitionWrapper>
+
+          <GoogleAuthWrapper>
+            <Google style={{ color: "#16FF00", transform: "scale(1.2)" }} />
+            <AuthText>Sign up with Google.</AuthText>
+          </GoogleAuthWrapper>
+        </Left>
+        <Right>
+          <Img
+            src="https://images.unsplash.com/photo-1556906781-9a412961c28c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80"
+            alt=""
+          />
+        </Right>
+      </Wrapper>
+    </Container>
   );
 };
 export default Registration;
