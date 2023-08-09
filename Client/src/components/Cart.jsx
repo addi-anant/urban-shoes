@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   laptop,
@@ -7,10 +7,25 @@ import {
   mobileXL,
   tablet,
 } from "../utils/responsive";
-import { CurrencyRupee, DeleteOutline } from "@mui/icons-material";
+import {
+  Add,
+  AddCircleOutline,
+  CurrencyRupee,
+  DeleteOutline,
+  Remove,
+  RemoveCircleOutline,
+} from "@mui/icons-material";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { Link } from "react-router-dom";
 import Slider from "./Slider";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  decreaseQuantity,
+  emptyCart,
+  increaseQuantity,
+  removeFromCart,
+} from "../redux/cartSlice";
+import { axiosInstance } from "../utils/axiosInstance";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -220,6 +235,7 @@ const ProductTypeWrapper = styled.div`
   gap: 10px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 `;
 
 const ProductType = styled.p`
@@ -242,13 +258,13 @@ const ProductType = styled.p`
 `;
 
 const InfoWrapper = styled.div`
+  height: 100%;
   gap: 10px;
   display: flex;
   font-size: 17px;
   color: #4d4d4d;
   font-weight: 600;
   font-family: "Nunito", sans-serif;
-
   ${mobileXL({
     fontSize: "15px",
   })}
@@ -262,6 +278,12 @@ const DropdownWrapper = styled.div`
   gap: 15px;
   display: flex;
   align-items: center;
+
+  ${mobile({
+    gap: "6px",
+    alignItems: "flex-start",
+    flexDirection: "column",
+  })}
 `;
 
 const ProductColor = styled.div`
@@ -290,6 +312,8 @@ const ProductQuantity = styled.p`
   margin: 0px;
   font-size: 17px;
   font-family: "Nunito", sans-serif;
+  display: flex;
+  align-items: center;
 
   ${mobileXL({
     fontSize: "15px",
@@ -358,6 +382,7 @@ const PaymentText = styled.p`
 `;
 
 const ButtonWrapper = styled.div`
+  width: 100%;
   left: 0px;
   right: 0px;
   bottom: 0px;
@@ -383,48 +408,46 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
-  const info = {
-    id: 1,
-    title: "Nike Tech Hera",
-    cost: "9 695.00",
-    description:
-      "The Tech Hera is here to fulfil all of your chunky sneaker wishes. The wavy lifted midsole and suede accents level up your look while keeping you comfortable. Its durable design holds up beautifully to everyday wear—which is perfect, because you'll definitely want to wear these every day.",
-    photo: [
-      "https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5/08f3e7fe-fdae-4a73-a551-64abeb1bbad6/tech-hera-shoes-JlV5km.png",
-      "https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5,q_80/5b5c2d7e-1d57-4040-bbea-ed95dac979da/tech-hera-shoes-JlV5km.png",
-      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/1239f5af-af11-4356-aa39-1d474dee4fd0/tech-hera-shoes-JlV5km.png",
-      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/6e1ed3de-e9d9-4268-974f-0de85530e60c/tech-hera-shoes-JlV5km.png",
-      "https://static.nike.com/a/images/t_default/d9c82563-fe46-4d96-af29-d5b6d8039fb2/tech-hera-shoes-JlV5km.png",
-    ],
-    tag: ["Women", "Sneaker", "Running"],
-    sizeAvailable: [
-      "6",
-      "6.5",
-      "7",
-      "7.5",
-      "8",
-      "8.5",
-      "9",
-      "9.5",
-      "10",
-      "10.5",
-      "11",
-    ],
-    colourAvailable: [
-      "D5FFE4",
-      "EAC696",
-      "D8D9DA",
-      "61677A",
-      "272829",
-      "E48586",
-    ],
-  };
+  const cart = useSelector((store) => store.cart);
+
+  // const fetchProduct = () => {
+  //   Promise.all(
+  //     cart?.products?.map((product) => {
+  //       axiosInstance.get(`/product/${product.id}`).then((response) =>
+  //         setCartProductList((prev) => [
+  //           ...prev,
+  //           {
+  //             ...response?.data,
+  //             selectedSize: product.size,
+  //             selectedColour: product.colour,
+  //             selectedQuantity: product.quantity,
+  //           },
+  //         ])
+  //       );
+  //     })
+  //   );
+  // };
+
+  // useEffect(() => {
+  //   fetchProduct();
+  // }, []);
 
   const { width } = useWindowDimensions();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const dispatch = useDispatch();
+  const removeProductFromCart = (id, cost, size, colour, quantity) => {
+    dispatch(removeFromCart({ id, cost, size, colour, quantity }));
+  };
+
+  const productQuantity = (type, _id, cost, size, colour, quantity) => {
+    type === "increase"
+      ? dispatch(increaseQuantity({ _id, cost, size, colour, quantity }))
+      : dispatch(decreaseQuantity({ _id, cost, size, colour, quantity }));
+  };
 
   return (
     <>
@@ -436,12 +459,12 @@ const Cart = () => {
                 <TopHeadingContainer>
                   <Heading> Bag </Heading>
                   <TextWrapper>
-                    <Text>3 Items</Text>
+                    <Text>{cart?.products?.length} Items</Text>
                     <Text>|</Text>
                     <Text>
                       <ProductCost>
                         <CurrencyRupee style={{ transform: "scale(0.7)" }} />
-                        {info?.cost}
+                        {cart?.cartSummary}
                       </ProductCost>
                     </Text>
                   </TextWrapper>
@@ -453,71 +476,109 @@ const Cart = () => {
             )}
 
             <ProductInfoWrapper>
-              {Array(3)
-                .fill("")
-                .map((val, index) => (
-                  <React.Fragment key={index}>
-                    <Link
-                      to={"/product/1"}
-                      style={{ textDecoration: "none", color: "inherit" }}>
-                      <Product>
-                        <Image src={info?.photo[0]} />
-                        <DetailWrapper>
-                          <Detail>
-                            <TopInfoWrapper>
-                              <HeadingWrapper>
-                                <ProductName>{info?.title}</ProductName>
-                                {width <= 660 ? null : (
-                                  <ProductCost>MRP: {info?.cost}</ProductCost>
-                                )}
-                              </HeadingWrapper>
-                              <ProductTypeWrapper>
-                                {info?.tag.map((val, index) => (
-                                  <ProductType key={index}>{val}</ProductType>
-                                ))}
-                              </ProductTypeWrapper>
-                            </TopInfoWrapper>
-                            <InfoWrapper>
-                              Color:
-                              <ProductColor color={info?.colourAvailable[0]} />
-                            </InfoWrapper>
+              {cart?.products?.map((info) => (
+                <React.Fragment key={info?._id}>
+                  <Product>
+                    <Image src={info?.photo[0]} />
+                    <DetailWrapper>
+                      <Detail>
+                        <TopInfoWrapper>
+                          <Link
+                            to={`/product/${info?._id}`}
+                            style={{
+                              textDecoration: "none",
+                              color: "inherit",
+                            }}>
+                            <HeadingWrapper>
+                              <ProductName>{info?.title}</ProductName>
+                              {width <= 660 ? null : (
+                                <ProductCost>MRP: {info?.cost}</ProductCost>
+                              )}
+                            </HeadingWrapper>
+                          </Link>
+                          <ProductTypeWrapper>
+                            {info?.tag.map((val, index) => (
+                              <ProductType key={index}>{val}</ProductType>
+                            ))}
+                          </ProductTypeWrapper>
+                        </TopInfoWrapper>
+                        <InfoWrapper>
+                          Color:
+                          <ProductColor color={info?.selectedColour} />
+                        </InfoWrapper>
 
-                            <DropdownWrapper>
-                              <InfoWrapper>
-                                Size:
-                                <ProductSize>
-                                  {info?.sizeAvailable[1]}
-                                </ProductSize>
-                              </InfoWrapper>
-                              <InfoWrapper>
-                                Quantity: <ProductQuantity>1</ProductQuantity>
-                              </InfoWrapper>
-                            </DropdownWrapper>
-                          </Detail>
-                          <UtilityWrapper>
-                            <DeleteOutline
-                              style={{
-                                transform: `scale(${width <= 660 ? 1 : 1.2}`,
-                                cursor: "pointer",
-                              }}
+                        <DropdownWrapper>
+                          <InfoWrapper>
+                            Size:
+                            <ProductSize>{info?.selectedSize}</ProductSize>
+                          </InfoWrapper>
+                          <InfoWrapper>
+                            Quantity:{" "}
+                            <ProductQuantity>
+                              {info?.selectedQuantity}
+                            </ProductQuantity>
+                            <AddCircleOutline
+                              style={{ cursor: "pointer" }}
+                              onClick={() =>
+                                productQuantity(
+                                  "increase",
+                                  info?._id,
+                                  info?.cost,
+                                  info?.selectedSize,
+                                  info?.selectedColour,
+                                  info?.selectedQuantity
+                                )
+                              }
                             />
+                            <RemoveCircleOutline
+                              style={{ cursor: "pointer" }}
+                              onClick={() =>
+                                productQuantity(
+                                  "decrease",
+                                  info?._id,
+                                  info?.cost,
+                                  info?.selectedSize,
+                                  info?.selectedColour,
+                                  info?.selectedQuantity
+                                )
+                              }
+                            />
+                          </InfoWrapper>
+                        </DropdownWrapper>
+                      </Detail>
+                      <UtilityWrapper>
+                        <DeleteOutline
+                          style={{
+                            transform: `scale(${width <= 660 ? 1 : 1.2}`,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            removeProductFromCart(
+                              info?._id,
+                              info?.cost,
+                              info?.selectedSize,
+                              info?.selectedColour,
+                              info?.selectedQuantity
+                            );
+                          }}
+                        />
 
-                            {width <= 660 ? (
-                              <ProductCost>
-                                MRP:
-                                <CurrencyRupee
-                                  style={{ transform: "scale(0.7)" }}
-                                />
-                                {info?.cost}
-                              </ProductCost>
-                            ) : null}
-                          </UtilityWrapper>
-                        </DetailWrapper>
-                      </Product>
-                    </Link>
-                    <Hr />
-                  </React.Fragment>
-                ))}
+                        {width <= 660 ? (
+                          <ProductCost>
+                            MRP:
+                            <CurrencyRupee
+                              style={{ transform: "scale(0.7)" }}
+                            />
+                            {info?.cost}
+                          </ProductCost>
+                        ) : null}
+                      </UtilityWrapper>
+                    </DetailWrapper>
+                  </Product>
+                  {/* </Link> */}
+                  <Hr />
+                </React.Fragment>
+              ))}
             </ProductInfoWrapper>
           </LeftWrapper>
 
@@ -527,13 +588,15 @@ const Cart = () => {
               <Payment>
                 <PaymentText>Subtotal</PaymentText>
                 <PaymentText>
-                  <CurrencyRupee style={{ transform: "scale(0.7)" }} /> {10}
+                  <CurrencyRupee style={{ transform: "scale(0.7)" }} />{" "}
+                  {cart?.cartSummary}
                 </PaymentText>
               </Payment>
               <Payment>
                 <PaymentText>Estimated Shipping & Handling</PaymentText>
                 <PaymentText>
-                  <CurrencyRupee style={{ transform: "scale(0.7)" }} /> 5.90
+                  <CurrencyRupee style={{ transform: "scale(0.7)" }} />{" "}
+                  {cart?.cartSummary !== 0 ? 99 : 0}
                 </PaymentText>
               </Payment>
 
@@ -541,7 +604,8 @@ const Cart = () => {
               <Payment>
                 <PaymentText>Total</PaymentText>
                 <PaymentText>
-                  <CurrencyRupee style={{ transform: "scale(0.7)" }} /> {10}
+                  <CurrencyRupee style={{ transform: "scale(0.7)" }} />{" "}
+                  {cart?.cartSummary + (cart?.cartSummary !== 0 ? 99 : 0)}
                 </PaymentText>
               </Payment>
               <Hr />

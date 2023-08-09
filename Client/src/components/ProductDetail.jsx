@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { styled } from "styled-components";
 import { mobile, mobileXL, tablet } from "../utils/responsive";
-import { CurrencyRupee } from "@mui/icons-material";
+import { CurrencyRupee, Favorite, FavoriteBorder } from "@mui/icons-material";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/cartSlice";
+import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice";
 
 const ProductWrapper = styled.div`
   gap: 5%;
@@ -247,15 +250,26 @@ const SizeInfo = styled.div`
 `;
 
 const Button = styled.button`
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 60px;
   border-radius: 100px;
   background-color: ${(props) => (props.color === "cart" ? "black" : "white")};
-  color: ${(props) => (props.color === "cart" ? "white" : "black")};
+  color: ${(props) =>
+    props.color === "cart" ? "white" : props.favourite ? "red" : "black"};
   font-family: "Nunito", sans-serif;
   font-weight: 600;
   font-size: 18px;
   margin-bottom: 18px;
+  border: ${(props) =>
+    props.color === "cart"
+      ? "1px solid black"
+      : props.favourite
+      ? "2px solid red"
+      : "2px solid black"};
   cursor: pointer;
 `;
 
@@ -269,11 +283,10 @@ const Description = styled.p`
 `;
 
 const ProductDetail = () => {
+  const { id } = useParams();
   const [selectedImg, setSelectedImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
-
-  const { id } = useParams();
 
   const { isLoading, error, data } = useQuery({
     queryKey: [`${id}`],
@@ -282,6 +295,38 @@ const ProductDetail = () => {
       return response.data;
     },
   });
+
+  const dispatch = useDispatch();
+
+  const addProductToCart = (product, colour, size) => {
+    dispatch(
+      addToCart({
+        ...product,
+        selectedSize: size,
+        selectedQuantity: 1,
+        selectedColour: colour,
+      })
+    );
+  };
+
+  const [favourite, setFavourite] = useState(false);
+  const wishlist = useSelector((store) => store.wishlist);
+
+  const isFavouriteProduct = (id) => {
+    wishlist?.products?.filter((product) => product._id === id).length &&
+      setFavourite(true);
+  };
+
+  useEffect(() => {
+    isFavouriteProduct(data?._id);
+  }, [isLoading]);
+
+  const wishlistProduct = (product) => {
+    !favourite
+      ? (setFavourite(true), dispatch(addToWishlist({ ...product })))
+      : (setFavourite(false),
+        dispatch(removeFromWishlist({ _id: product?._id })));
+  };
 
   const { width } = useWindowDimensions();
   return (
@@ -371,8 +416,26 @@ const ProductDetail = () => {
             </SizeContainer>
           </SizeWrapper>
 
-          <Button color="cart">Add to bag</Button>
-          <Button>Favourite</Button>
+          <Button
+            color="cart"
+            onClick={() =>
+              addProductToCart(
+                data,
+                data?.colourAvailable[selectedColor],
+                data?.sizeAvailable[selectedSize]
+              )
+            }>
+            Add to bag
+          </Button>
+          <Button favourite={favourite} onClick={() => wishlistProduct(data)}>
+            Favourite{" "}
+            <FavoriteBorder
+              style={{
+                color: `${favourite ? "red" : "black"}`,
+                transform: "scale(1.2)",
+              }}
+            />
+          </Button>
 
           <Header>Description:</Header>
           <Description>{data?.description}</Description>

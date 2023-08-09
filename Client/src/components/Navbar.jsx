@@ -7,7 +7,8 @@ import React, { useState } from "react";
 import { css, keyframes, styled } from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { Link } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import { Badge } from "@mui/material";
 const Wrapper = styled.div`
   width: 100%;
   display: flex;
@@ -126,8 +127,10 @@ const CancelButton = styled.button`
 
 const Navbar = () => {
   const { width } = useWindowDimensions();
-
   const [isTyping, setIsTyping] = useState(false);
+
+  const cart = useSelector((store) => store.cart.products);
+  const wishlist = useSelector((store) => store.wishlist.products);
 
   return (
     <Wrapper>
@@ -152,12 +155,16 @@ const Navbar = () => {
 
           {!isTyping && (
             <>
-              <FavoriteBorder />
+              <Badge badgeContent={wishlist.length} color="secondary">
+                <FavoriteBorder />
+              </Badge>
 
               <Link
                 to="/cart"
                 style={{ textDecoration: "none", color: "inherit" }}>
-                <ShoppingBagOutlined />
+                <Badge badgeContent={cart.length} color="secondary">
+                  <ShoppingBagOutlined />
+                </Badge>
               </Link>
             </>
           )}
