@@ -82,24 +82,23 @@ const cartSlice = createSlice({
 
       state.cartSummary -= action?.payload?.quantity * action?.payload?.cost;
     },
-    emptyCart: (state) => {
-      state.cartSummary = 0;
+    clearCart: (state, action) => {
       state.products = [];
+      state.cartSummary = 0;
+    },
+    storeCart: (state, action) => {
+      state.products = action?.payload?.cartInfo;
+      state.cartSummary = action?.payload?.cartSummary;
     },
   },
 });
 
 export const {
   addToCart,
-  emptyCart,
+  clearCart,
+  storeCart,
   removeFromCart,
   increaseQuantity,
   decreaseQuantity,
 } = cartSlice.actions;
 export default cartSlice.reducer;
-
-// emptyCart
-// emptyCart: (state) => {
-//     state.cartSummary = 0;
-//     state.products = [];
-// },

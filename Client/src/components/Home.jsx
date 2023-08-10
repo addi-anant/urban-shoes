@@ -1,12 +1,10 @@
-import Essentials from "./Essentials";
 import Header from "./Header";
 import Slider from "./Slider";
-import { styled } from "styled-components";
 import Slogan from "./Slogan";
-import IconicSlider from "./IconicSlider";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { emptyCart } from "../redux/cartSlice";
+import Essentials from "./Essentials";
+import IconicSlider from "./IconicSlider";
+import { styled } from "styled-components";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -18,8 +16,6 @@ const Home = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // const dispatch = useDispatch();
-  // dispatch(emptyCart());
   return (
     <Wrapper>
       <Header type="header" />

@@ -132,6 +132,9 @@ const Navbar = () => {
   const cart = useSelector((store) => store.cart.products);
   const wishlist = useSelector((store) => store.wishlist.products);
 
+  // const cart = 0;
+  // const wishlist = 0;
+
   return (
     <Wrapper>
       <Container typing={isTyping.toString()}>

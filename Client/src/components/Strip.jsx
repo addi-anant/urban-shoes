@@ -38,12 +38,36 @@ const Text = styled.p`
 const Strip = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((store) => store.user.user);
+  const { user, wishlist, cart } = useSelector((store) => store);
+
+  const saveStateAndLogout = () => {
+    const wishlistProductId = wishlist.products.map((product) => product?._id);
+
+    const cartProductId = cart?.products.map((product) => {
+      const obj = {
+        productInfo: product?._id,
+        selectedColour: product?.selectedColour,
+        selectedSize: product?.selectedSize,
+        selectedQuantity: product?.selectedQuantity,
+      };
+
+      return obj;
+    });
+
+    logout(
+      user?.user?._id,
+      navigate,
+      dispatch,
+      wishlistProductId,
+      cartProductId,
+      cart?.cartSummary
+    );
+  };
 
   return (
     <Wrapper>
       <OuterContainer>
-        {!user ? (
+        {!user?.user ? (
           <Container>
             <Text> Find a store </Text>
             <Text> | </Text>
@@ -64,10 +88,10 @@ const Strip = () => {
           </Container>
         ) : (
           <Container>
-            <Text> {user?.name} </Text>
+            <Text> {user?.user?.name} </Text>
             <Text> | </Text>
 
-            <Text onClick={() => logout(navigate, dispatch)}> Logout </Text>
+            <Text onClick={saveStateAndLogout}>Logout</Text>
           </Container>
         )}
       </OuterContainer>

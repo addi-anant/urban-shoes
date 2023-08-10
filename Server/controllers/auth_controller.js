@@ -1,11 +1,21 @@
 const User = require("../models/User");
 const CryptoJS = require("crypto-js");
 const { generateAccessToken } = require("../JWT/JWT_auth");
+const Cart = require("../models/Cart");
 
 // Login:
 module.exports.login = async (req, res) => {
   const credentials = req.body;
-  const user = await User.findOne({ email: credentials.email });
+  const user = await User.findOne({ email: credentials.email })
+    .populate({
+      path: "wishlist",
+    })
+    .populate({
+      path: "cart",
+      populate: {
+        path: "productList.productInfo",
+      },
+    });
 
   /* No matching user found: */
   if (!user)
@@ -26,7 +36,7 @@ module.exports.login = async (req, res) => {
   const accessToken = generateAccessToken(user);
 
   /* Don't send password along with user detials: */
-  const { password, ...userDetails } = user._doc;
+  const { password, ...userInfo } = user._doc;
 
   /* Return the required data */
   return res
@@ -34,15 +44,24 @@ module.exports.login = async (req, res) => {
       httpOnly: false,
     })
     .status(200)
-    .send(userDetails);
+    .send(userInfo);
 };
 
 // Register:
 module.exports.register = async (req, res) => {
   const credentials = req.body;
 
+  const cart = new Cart();
+  try {
+    await cart.save();
+  } catch (Error) {
+    console.log(`Error creating cart: ${Error}`);
+    return res.status(500).json(Error);
+  }
+
   const user_created = new User({
     ...credentials,
+    cart: cart._id,
     password: CryptoJS.AES.encrypt(
       req.body.password,
       process.env.PASSWORD_SECRET
@@ -52,7 +71,8 @@ module.exports.register = async (req, res) => {
   try {
     await user_created.save();
     return res.status(200).send("user created successfully.");
-  } catch (error) {
+  } catch (Error) {
+    console.log(`Error creating user: ${Error}`);
     return res.status(500).json(error);
   }
 };
@@ -124,11 +144,27 @@ module.exports.google = async (req, res) => {
 
 // Logout:
 module.exports.logout = async (req, res) => {
-  res
-    .clearCookie("accessToken", {
-      sameSite: "none",
-      secure: true,
-    })
-    .status(200)
-    .send("You logged out successfully.");
+  const { id, cartProductId, wishlistProductId, cartSummary } = req.body;
+
+  try {
+    await User.findByIdAndUpdate(id, {
+      $set: { wishlist: wishlistProductId, cartSummary },
+    });
+
+    const user = await User.findById(id);
+    await Cart.findByIdAndUpdate(user?.cart, {
+      $set: { productList: cartProductId },
+    });
+
+    return res
+      .clearCookie("accessToken", {
+        sameSite: "none",
+        secure: true,
+      })
+      .status(200)
+      .send("You logged out successfully.");
+  } catch (Error) {
+    console.log(`Error while updating user during logout: ${Error}`);
+    return res.status(500).json(Error);
+  }
 };

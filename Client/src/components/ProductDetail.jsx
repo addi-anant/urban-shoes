@@ -297,8 +297,15 @@ const ProductDetail = () => {
   });
 
   const dispatch = useDispatch();
+  const { user } = useSelector((store) => store.user);
 
   const addProductToCart = (product, colour, size) => {
+    if (!user) {
+      // show login message:
+      console.log("login to add product to cart!");
+      return;
+    }
+
     dispatch(
       addToCart({
         ...product,
@@ -322,6 +329,12 @@ const ProductDetail = () => {
   }, [isLoading]);
 
   const wishlistProduct = (product) => {
+    if (!user) {
+      // show login message:
+      console.log("login to add product to Favourite!");
+      return;
+    }
+
     !favourite
       ? (setFavourite(true), dispatch(addToWishlist({ ...product })))
       : (setFavourite(false),

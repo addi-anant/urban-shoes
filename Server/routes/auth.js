@@ -12,7 +12,6 @@ router.post("/register", auth.register);
 router.post("/google", auth.google);
 
 // Logout:
-// router.get("/logout", auth.logout);
-router.get("/logout", verifyToken, auth.logout);
+router.post("/logout", verifyToken, auth.logout);
 
 module.exports = router;

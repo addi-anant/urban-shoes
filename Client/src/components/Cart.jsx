@@ -408,7 +408,10 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const dispatch = useDispatch();
+  const { width } = useWindowDimensions();
   const cart = useSelector((store) => store.cart);
+  const { user } = useSelector((store) => store.user);
 
   // const fetchProduct = () => {
   //   Promise.all(
@@ -432,18 +435,17 @@ const Cart = () => {
   //   fetchProduct();
   // }, []);
 
-  const { width } = useWindowDimensions();
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const dispatch = useDispatch();
   const removeProductFromCart = (id, cost, size, colour, quantity) => {
+    if (!user) return;
     dispatch(removeFromCart({ id, cost, size, colour, quantity }));
   };
 
   const productQuantity = (type, _id, cost, size, colour, quantity) => {
+    if (!user) return;
     type === "increase"
       ? dispatch(increaseQuantity({ _id, cost, size, colour, quantity }))
       : dispatch(decreaseQuantity({ _id, cost, size, colour, quantity }));
@@ -477,7 +479,8 @@ const Cart = () => {
 
             <ProductInfoWrapper>
               {cart?.products?.map((info) => (
-                <React.Fragment key={info?._id}>
+                <React.Fragment
+                  key={`${info?._id}${info?.selectedColour}${info?.selectedSize}${info?.selectedQuantity}`}>
                   <Product>
                     <Image src={info?.photo[0]} />
                     <DetailWrapper>
