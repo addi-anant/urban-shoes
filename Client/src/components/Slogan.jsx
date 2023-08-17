@@ -67,7 +67,7 @@ const Slogan = () => {
         </Text>
         <Link
           style={{ textDecoration: "none", color: "inherit" }}
-          to={`/search/all`}>
+          to={`/search/All`}>
           <Button> Shop </Button>
         </Link>
       </Container>

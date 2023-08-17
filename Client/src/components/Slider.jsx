@@ -6,6 +6,7 @@ import { mobile, mobileXL, tablet } from "../utils/responsive";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { axiosInstance } from "../utils/axiosInstance";
+import SliderCardLoader from "./Loaders/SliderCardLoader";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -134,9 +135,21 @@ const Slider = ({ heading }) => {
         </HeaderWrapper>
 
         <SliderWrapper ref={ref}>
-          {data?.map((info) => (
-            <SliderCard key={info?._id} info={info} />
-          ))}
+          {isLoading ? (
+            <>
+              {Array(10)
+                .fill("")
+                .map((_, index) => (
+                  <SliderCardLoader key={index} />
+                ))}
+            </>
+          ) : (
+            <>
+              {data?.map((info) => (
+                <SliderCard key={info?._id} info={info} />
+              ))}
+            </>
+          )}
         </SliderWrapper>
       </Container>
     </Wrapper>

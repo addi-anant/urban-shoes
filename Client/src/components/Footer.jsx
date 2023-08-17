@@ -5,6 +5,7 @@ import { mobile, mobileXL, tablet } from "../utils/responsive";
 
 const Wrapper = styled.div`
   width: 100%;
+  margin-top: 50px;
   padding-top: 40px;
   background-color: #0f0f0f;
 `;

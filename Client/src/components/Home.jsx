@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import Essentials from "./Essentials";
 import IconicSlider from "./IconicSlider";
 import { styled } from "styled-components";
+import { useDispatch } from "react-redux";
+import { clearFilterAndSearch } from "../redux/filtersAndSearchSlice";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -12,8 +14,11 @@ const Wrapper = styled.div`
 `;
 
 const Home = () => {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    dispatch(clearFilterAndSearch());
   }, []);
 
   return (

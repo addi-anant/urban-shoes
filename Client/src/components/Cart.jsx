@@ -16,7 +16,7 @@ import {
   RemoveCircleOutline,
 } from "@mui/icons-material";
 import useWindowDimensions from "../hooks/useWindowDimensions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Slider from "./Slider";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,6 +26,7 @@ import {
   removeFromCart,
 } from "../redux/cartSlice";
 import { axiosInstance } from "../utils/axiosInstance";
+import axios from "axios";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -413,28 +414,6 @@ const Cart = () => {
   const cart = useSelector((store) => store.cart);
   const { user } = useSelector((store) => store.user);
 
-  // const fetchProduct = () => {
-  //   Promise.all(
-  //     cart?.products?.map((product) => {
-  //       axiosInstance.get(`/product/${product.id}`).then((response) =>
-  //         setCartProductList((prev) => [
-  //           ...prev,
-  //           {
-  //             ...response?.data,
-  //             selectedSize: product.size,
-  //             selectedColour: product.colour,
-  //             selectedQuantity: product.quantity,
-  //           },
-  //         ])
-  //       );
-  //     })
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   fetchProduct();
-  // }, []);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -449,6 +428,48 @@ const Cart = () => {
     type === "increase"
       ? dispatch(increaseQuantity({ _id, cost, size, colour, quantity }))
       : dispatch(decreaseQuantity({ _id, cost, size, colour, quantity }));
+  };
+
+  const navigate = useNavigate();
+
+  const handlePayment = async () => {
+    const key = await axiosInstance.get("/payment/key");
+
+    const order = await axiosInstance.post("/payment", {
+      amount: cart.cartSummary,
+    });
+
+    const options = {
+      key: key?.data?.key,
+      amount: order?.data?.amount,
+      currency: "INR",
+      name: "URBAN SHOES",
+      image:
+        "https://res.cloudinary.com/additya/image/upload/v1678127598/Voyance/r9udien7vaenzecl8mmk.png",
+      order_id: order?.data?.id,
+      handler: async function (response) {
+        await axiosInstance.post("/payment/verify", {
+          product: cart?.products /* Required -> Colour, Size, Quantity, _id */,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+        });
+
+        /* Clear Cart and Show Success Message / Navigate to ORDER page: */
+        console.log("payment success.");
+        navigate("/");
+      },
+      prefill: {
+        name: user.name,
+        email: user.email,
+      },
+      theme: {
+        color: "#000000",
+      },
+    };
+
+    const razor = new window.Razorpay(options);
+    razor.open();
   };
 
   return (
@@ -500,9 +521,11 @@ const Cart = () => {
                             </HeadingWrapper>
                           </Link>
                           <ProductTypeWrapper>
-                            {info?.tag.map((val, index) => (
-                              <ProductType key={index}>{val}</ProductType>
-                            ))}
+                            {[info?.brand, ...info?.gender, ...info?.type].map(
+                              (val, index) => (
+                                <ProductType key={index}>{val}</ProductType>
+                              )
+                            )}
                           </ProductTypeWrapper>
                         </TopInfoWrapper>
                         <InfoWrapper>
@@ -618,7 +641,7 @@ const Cart = () => {
 
           {width <= 1024 ? (
             <ButtonWrapper>
-              <Button> Checkout </Button>
+              <Button onClick={handlePayment}> Checkout </Button>
             </ButtonWrapper>
           ) : null}
         </Container>

@@ -1,8 +1,10 @@
 export const brand = ["Nike", "Adidas", "Reebok", "Puma"];
-export const gender = ["Male", "Female", "Unisex"];
+export const gender = ["Men", "Women", "kids"];
 export const price = [2000, 4000, 6000, 8000, 10000];
-export const type = ["Sneaker", "Sports", "Running", "Formal"];
+export const type = ["Sneaker", "Sports", "Running", "Formal", "Training"];
 export const sizeAvailable = [
+  "5",
+  "5.5",
   "6",
   "6.5",
   "7",
@@ -17,10 +19,13 @@ export const sizeAvailable = [
 ];
 
 export const colourAvailable = [
-  "D5FFE4",
-  "EAC696",
-  "D8D9DA",
   "61677A",
   "272829",
-  "E48586",
+  "D3D3D3",
+  "F5F3F4",
+  "333533",
+  "0D1B2A",
+  "0466C8",
+  "FFFFFF",
+  "DEE2FF",
 ];

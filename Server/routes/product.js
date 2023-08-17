@@ -8,4 +8,6 @@ router.get("/:id", product.get_individual_product);
 
 router.post("/add", verifyToken, product.add_product);
 
+router.post("/search/:query", product.search_product);
+
 module.exports = router;

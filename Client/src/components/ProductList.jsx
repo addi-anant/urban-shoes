@@ -10,6 +10,7 @@ import FilterModal from "./FilterModal";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
+import { useSelector } from "react-redux";
 
 const OuterWrapper = styled.div`
   width: 100%;
@@ -99,10 +100,15 @@ const FilterButton = styled.button`
 const ProductList = () => {
   const { query } = useParams();
 
+  const filtersAndSearch = useSelector((store) => store.filtersAndSearch);
+  const { brand, colour, size, gender, type, cost } = filtersAndSearch;
+
   const { isLoading, error, data } = useQuery({
-    queryKey: [`${query}`],
+    queryKey: [query, filtersAndSearch],
     queryFn: async () => {
-      const response = await axiosInstance.get("/product");
+      const response = await axiosInstance.post(`/product/search/${query}`, {
+        ...filtersAndSearch,
+      });
       return response.data;
     },
   });

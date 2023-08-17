@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { styled } from "styled-components";
 import { colourAvailable, sizeAvailable } from "../utils/constant";
+import { useDispatch, useSelector } from "react-redux";
+import { search } from "../redux/filtersAndSearchSlice";
 
 const MultiSelectWrapper = styled.div`
   margin-bottom: 20px;
@@ -75,40 +77,55 @@ const MultiSelectFilter = ({ heading, filter, setFilter }) => {
     }
   };
 
+  const size = useSelector((store) => store.filtersAndSearch.size);
+  const colour = useSelector((store) => store.filtersAndSearch.colour);
+
+  const dispatch = useDispatch();
   const handleFilter = (index, type, value) => {
     revealRefs.current[index].style.outline === ""
       ? (revealRefs.current[index].style.outline = "2px solid black")
       : (revealRefs.current[index].style.outline = "");
-
-    console.log(`${type}: ${value}`);
-
-    console.log(filter[type]);
 
     if (filter[type].indexOf(value) === -1) {
       setFilter({
         ...filter,
         [type]: [...filter[type], value],
       });
+
+      dispatch(
+        search({
+          [type]: [...filter[type], value],
+        })
+      );
     } else {
       const arr = filter[type].filter((val) => val !== value);
       setFilter({
         ...filter,
         [type]: arr,
       });
+
+      dispatch(
+        search({
+          [type]: arr,
+        })
+      );
     }
   };
 
   return (
     <MultiSelectWrapper>
-      <Header>{heading}:</Header>
+      <Header>{heading}</Header>
       {heading === "Colour" && (
         <ColourContainer>
-          {colourAvailable.map((colour, index) => (
+          {colourAvailable.map((val, index) => (
             <Colour
               key={index}
-              colour={colour}
+              colour={val}
               ref={addToRef}
-              onClick={() => handleFilter(index, "colour", colour)}
+              onClick={() => handleFilter(index, "colour", val)}
+              style={{
+                outline: colour.includes(val) ? "2px solid black" : "",
+              }}
             />
           ))}
         </ColourContainer>
@@ -116,13 +133,16 @@ const MultiSelectFilter = ({ heading, filter, setFilter }) => {
 
       {heading === "Size" && (
         <SizeContainer>
-          {sizeAvailable.map((size, index) => (
+          {sizeAvailable.map((val, index) => (
             <Size
               key={index}
-              size={size}
+              size={val}
               ref={addToRef}
-              onClick={() => handleFilter(index, "size", size)}>
-              <SizeInfo>U.K {size}</SizeInfo>
+              onClick={() => handleFilter(index, "size", val)}
+              style={{
+                outline: size.includes(val) ? "2px solid black" : "",
+              }}>
+              <SizeInfo>U.K {val}</SizeInfo>
             </Size>
           ))}
         </SizeContainer>

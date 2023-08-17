@@ -5,6 +5,10 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  brand: {
+    type: String,
+    required: true,
+  },
   cost: {
     type: Number,
     required: true,
@@ -17,7 +21,11 @@ const ProductSchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
-  tag: {
+  type: {
+    type: [String],
+    required: true,
+  },
+  gender: {
     type: [String],
     required: true,
   },
@@ -31,4 +39,5 @@ const ProductSchema = new mongoose.Schema({
   },
 });
 
+ProductSchema.index({ title: "text" });
 module.exports = mongoose.model("Product", ProductSchema);

@@ -3,8 +3,6 @@ const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-// const cookieSession = require("cookie-session");
-// const session = require("express-session");
 
 const app = express();
 
@@ -27,7 +25,6 @@ mongoose
   .then(() => console.log("Successfully Connected to the MongoDB Database."))
   .catch((error) => console.log(error));
 
-/* Handling API Request: */
 app.use("/", require("./routes/index"));
 
 /* Server: */

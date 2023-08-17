@@ -3,12 +3,13 @@ import {
   Search,
   ShoppingBagOutlined,
 } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { css, keyframes, styled } from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimensions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Badge } from "@mui/material";
+
 const Wrapper = styled.div`
   width: 100%;
   display: flex;
@@ -16,42 +17,20 @@ const Wrapper = styled.div`
   justify-content: center;
 `;
 
-const growHorizontal = keyframes`
- 0% { height: 100px;  }
- 100% { height: 300px;  }
-`;
-
 const Container = styled.div`
-  width: ${(props) => (props.typing === "true" ? "100%" : "94%")};
+  width: ${(props) => (props.typing === "true" ? "94%" : "94%")};
   display: flex;
   align-items: ${(props) =>
     props.typing === "true" ? "flex-start" : "center"};
   justify-content: space-between;
-  margin: ${(props) => (props.typing === "true" ? "0px" : "10px")};
-  height: ${(props) => (props.typing === "true" ? "300px" : "max-content")};
-  position: ${(props) => (props.typing === "true" ? "fixed" : "relative")};
-  padding-top: ${(props) => (props.typing === "true" ? "10px" : "0px")};
-  top: 0px;
-  left: 0px;
-  right: 0px;
+  margin: 10px;
   background-color: white;
-  z-index: 10;
-
-  animation-name: ${(props) =>
-    props.typing === "true"
-      ? css`
-          ${growHorizontal}
-        `
-      : ""};
-
-  animation-duration: ${(props) => (props.typing === "true" ? "1s" : "")};
 `;
 
 const Img = styled.img`
   height: 40px;
   width: 60px;
   object-fit: contain;
-  margin-left: ${(props) => (props.typing === "true" ? "10px" : "0px")};
 `;
 
 const UtilityContainer = styled.div`
@@ -62,19 +41,32 @@ const UtilityContainer = styled.div`
     props.typing === "true" ? "flex-start" : "center"};
   justify-content: flex-end;
   gap: 18px;
-  width: ${(props) => (props.typing === "true" ? "100%" : "max-content")};
+  width: ${(props) => (props.typing === "true" ? "100%" : "100%")};
 `;
 
 const growVertical = keyframes`
- 0% { width: 300px;  }
+ 0% { width: 165px;  }
+ 100% { width: 95%;  }
+`;
+
+const shrinkVertical = keyframes`
+ 0% { width: 95%;  }
+ 100% { width: 165px;  }
+`;
+
+const growVerticalMobile = keyframes`
+ 0% { width: 0px;  }
  100% { width: 90%;  }
 `;
 
-const SearchWrapper = styled.div`
-  /* border: 1px solid red; */
+const shrinkVerticalMobile = keyframes`
+ 0% { width: 90%;  }
+ 100% { width: 35px;  }
+`;
 
+const SearchWrapper = styled.div`
   height: 25px;
-  width: ${(props) => (props.typing === "true" ? "90%" : "max-content")};
+  width: ${(props) => (props.typing === "true" ? "95%" : "max-content")};
   display: flex;
   align-items: center;
   border: 1px solid black;
@@ -92,12 +84,24 @@ const SearchWrapper = styled.div`
 
   animation-name: ${(props) =>
     props.typing === "true"
-      ? css`
-          ${growVertical}
-        `
+      ? props.width !== "true"
+        ? css`
+            ${growVertical}
+          `
+        : css`
+            ${growVerticalMobile}
+          `
+      : props.typing === "false"
+      ? props.width !== "true"
+        ? css`
+            ${shrinkVertical}
+          `
+        : css`
+            ${shrinkVerticalMobile}
+          `
       : ""};
 
-  animation-duration: ${(props) => (props.typing === true ? "0.5s" : "")};
+  animation-duration: ${(props) => (props.typing === "true" ? "0.5s" : "0.5s")};
 `;
 
 const Input = styled.input`
@@ -105,7 +109,13 @@ const Input = styled.input`
   outline: none;
   background-color: transparent;
   font-family: "Nunito", sans-serif;
-  width: 125px;
+  max-width: ${(props) =>
+    props.typing === "true"
+      ? "100%"
+      : props.width === "true"
+      ? "0px"
+      : "125px"};
+  width: 100%;
   font-size: 16px;
 
   &::placeholder {
@@ -115,7 +125,7 @@ const Input = styled.input`
 `;
 
 const CancelButton = styled.button`
-  padding: 6px 15px;
+  padding: 9px 15px;
   border-radius: 100px;
   margin-right: 10px;
   color: white;
@@ -123,45 +133,82 @@ const CancelButton = styled.button`
   cursor: pointer;
   background-color: black;
   font-family: "Nunito", sans-serif;
+  border: none;
+  outline: none;
 `;
 
 const Navbar = () => {
   const { width } = useWindowDimensions();
-  const [isTyping, setIsTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState();
 
   const cart = useSelector((store) => store.cart.products);
   const wishlist = useSelector((store) => store.wishlist.products);
 
-  // const cart = 0;
-  // const wishlist = 0;
+  const navigate = useNavigate();
+  const [query, setQuery] = useState();
+
+  const invokeSearch = (event) => {
+    if (event.key === "Enter") {
+      setIsTyping(false);
+      navigate(`/search/${query}`);
+    }
+
+    event.key === "Escape" && setIsTyping(false);
+
+    event.key !== "Enter" && event.key !== "Escape" && setIsTyping(true);
+  };
 
   return (
     <Wrapper>
-      <Container typing={isTyping.toString()}>
+      <Container typing={isTyping?.toString()}>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/320px-Logo_NIKE.svg.png"
-            typing={isTyping.toString()}
-          />
+          {!isTyping && (
+            <Img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/320px-Logo_NIKE.svg.png"
+              typing={isTyping?.toString()}
+            />
+          )}
         </Link>
-        <UtilityContainer typing={isTyping.toString()}>
+        <UtilityContainer typing={isTyping?.toString()}>
           {width <= 480 ? (
-            <Search style={{ transform: "scale(1.2)", cursor: "pointer" }} />
+            <SearchWrapper
+              typing={isTyping?.toString()}
+              width={(width <= 480).toString()}
+              onClick={() => setIsTyping(true)}>
+              <Search style={{ transform: "scale(1.2)", cursor: "pointer" }} />
+              <Input
+                placeholder="Search"
+                width={(width <= 480).toString()}
+                typing={isTyping?.toString()}
+                onKeyUp={(event) => invokeSearch(event)}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </SearchWrapper>
           ) : (
             <SearchWrapper
-              typing={isTyping.toString()}
+              typing={isTyping?.toString()}
+              width={(width <= 480).toString()}
               onClick={() => setIsTyping(true)}>
               <Search style={{ transform: "scale(1.2)" }} />
-              <Input placeholder="Search" />
+              <Input
+                placeholder="Search"
+                width={(width <= 480).toString()}
+                typing={isTyping?.toString()}
+                onKeyUp={invokeSearch}
+                onChange={(event) => setQuery(event.target.value)}
+              />
             </SearchWrapper>
           )}
 
           {!isTyping && (
             <>
-              <Badge badgeContent={wishlist.length} color="secondary">
-                <FavoriteBorder />
-              </Badge>
-
+              <Link
+                to="/wishlist"
+                style={{ textDecoration: "none", color: "inherit" }}>
+                <Badge badgeContent={wishlist.length} color="secondary">
+                  <FavoriteBorder />
+                </Badge>
+              </Link>
               <Link
                 to="/cart"
                 style={{ textDecoration: "none", color: "inherit" }}>

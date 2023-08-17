@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div`
   width: 100%;
+  position: relative;
   height: max-content;
 `;
 
@@ -28,6 +30,8 @@ const Header = styled.p`
 `;
 
 const IconicCard = ({ info }) => {
+  const dispatch = useDispatch();
+
   return (
     <>
       <Link
@@ -37,6 +41,7 @@ const IconicCard = ({ info }) => {
           <ImgContainer>
             <Img alt="product" src={info?.photo[0]} />
           </ImgContainer>
+
           <Header>{info?.title}</Header>
         </Container>
       </Link>

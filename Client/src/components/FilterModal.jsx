@@ -91,7 +91,7 @@ const FilterModal = ({ setOpen }) => {
           </TopWrapper>
           <Filter component="modal" />
           <ButtonWrapper>
-            <ApplyButton>Apply</ApplyButton>
+            <ApplyButton onClick={() => setOpen(false)}>Apply</ApplyButton>
           </ButtonWrapper>
         </Container>
       </FilterWrapper>

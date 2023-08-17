@@ -9,6 +9,8 @@ import Footer from "./components/Footer";
 import Home from "./components/Home";
 import Strip from "./components/Strip";
 import Cart from "./components/Cart";
+import Wishlist from "./components/Wishlist";
+import AddProductForm from "./components/AddProductForm";
 
 const AppOutlet = () => {
   return (
@@ -49,6 +51,14 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         element: <Cart />,
+      },
+      {
+        path: "/wishlist",
+        element: <Wishlist />,
+      },
+      {
+        path: "/add-product",
+        element: <AddProductForm />,
       },
     ],
   },

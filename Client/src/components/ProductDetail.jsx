@@ -10,6 +10,8 @@ import { axiosInstance } from "../utils/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice";
+import useToast from "../hooks/useToast";
+import ProductDetailLoader from "./Loaders/ProductDetailLoader";
 
 const ProductWrapper = styled.div`
   gap: 5%;
@@ -145,10 +147,13 @@ const TagWrapper = styled.div`
 `;
 
 const Tag = styled.span`
-  color: black;
-  font-size: 16px;
-  font-weight: bold;
+  color: #4d4d4d;
+  border-radius: 100px;
+  padding: 4px 6px;
+  font-size: 14px;
+  font-weight: 600;
   font-family: "Nunito", sans-serif;
+  background-color: #f5f5f5;
 `;
 
 const PriceWrapper = styled.div`
@@ -284,6 +289,7 @@ const Description = styled.p`
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const [tag, setTag] = useState([]);
   const [selectedImg, setSelectedImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
@@ -294,15 +300,19 @@ const ProductDetail = () => {
       const response = await axiosInstance.get(`/product/${id}`);
       return response.data;
     },
+    onSuccess: (data) => {
+      isFavouriteProduct(data?._id);
+      setTag([...data?.gender, ...data?.type, data?.brand]);
+    },
   });
 
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.user);
 
+  const toast = useToast();
   const addProductToCart = (product, colour, size) => {
     if (!user) {
-      // show login message:
-      console.log("login to add product to cart!");
+      toast.open("Login to add product to cart!");
       return;
     }
 
@@ -314,6 +324,8 @@ const ProductDetail = () => {
         selectedColour: colour,
       })
     );
+
+    toast.open("Product added to Cart.");
   };
 
   const [favourite, setFavourite] = useState(false);
@@ -324,68 +336,36 @@ const ProductDetail = () => {
       setFavourite(true);
   };
 
-  useEffect(() => {
-    isFavouriteProduct(data?._id);
-  }, [isLoading]);
-
   const wishlistProduct = (product) => {
     if (!user) {
-      // show login message:
-      console.log("login to add product to Favourite!");
+      toast.open("Login to add product to Favourite!");
       return;
     }
 
     !favourite
-      ? (setFavourite(true), dispatch(addToWishlist({ ...product })))
+      ? (setFavourite(true),
+        dispatch(addToWishlist({ ...product })),
+        toast.open("Product added to Favourite."))
       : (setFavourite(false),
-        dispatch(removeFromWishlist({ _id: product?._id })));
+        dispatch(removeFromWishlist({ _id: product?._id })),
+        toast.open("Product removed from Favourite."));
   };
 
   const { width } = useWindowDimensions();
-  return (
-    <ProductWrapper>
-      {width <= "768" && (
-        <>
-          <Title>{data?.title}</Title>
-          <TagWrapper>
-            {data?.tag.map((tag, index) => (
-              <Tag key={index}>{tag}</Tag>
-            ))}
-          </TagWrapper>
-          <PriceWrapper>
-            <PriceContainer>
-              <PriceInfoSpan>MRP: </PriceInfoSpan>
-              <CurrencyRupee style={{ transform: "scale(0.8)" }} />
-              <Price className="price">{data?.cost}</Price>
-            </PriceContainer>
-            <PriceSpan>(Also includes all applicable duties)</PriceSpan>
-          </PriceWrapper>
-        </>
-      )}
 
-      <Left>
-        <SideImgWrapper>
-          {data?.photo.map((img, index) => (
-            <SideImg
-              key={index}
-              child={selectedImg + 1}
-              src={data?.photo[index]}
-              alt=""
-              onMouseEnter={() => setSelectedImg(index)}
-            />
-          ))}
-        </SideImgWrapper>
-        <MainImgWrapper>
-          <MainImg src={data?.photo[selectedImg]} alt="" />
-        </MainImgWrapper>
-      </Left>
-      <Right>
-        <RightContainer>
-          {width > "768" && (
+  return (
+    <>
+      {isLoading ? (
+        <>
+          <ProductDetailLoader />
+        </>
+      ) : (
+        <ProductWrapper>
+          {width <= "768" && (
             <>
               <Title>{data?.title}</Title>
               <TagWrapper>
-                {data?.tag.map((tag, index) => (
+                {tag?.map((tag, index) => (
                   <Tag key={index}>{tag}</Tag>
                 ))}
               </TagWrapper>
@@ -400,61 +380,102 @@ const ProductDetail = () => {
             </>
           )}
 
-          <ColorWrapper>
-            <Header>Select Color:</Header>
-            <ColorContainer>
-              {data?.colourAvailable.map((color, index) => (
-                <Color
+          <Left>
+            <SideImgWrapper>
+              {data?.photo.map((img, index) => (
+                <SideImg
                   key={index}
-                  child={selectedColor + 1}
-                  color={color}
-                  onClick={() => setSelectedColor(index)}
+                  child={selectedImg + 1}
+                  src={data?.photo[index]}
+                  alt=""
+                  onMouseEnter={() => setSelectedImg(index)}
                 />
               ))}
-            </ColorContainer>
-          </ColorWrapper>
+            </SideImgWrapper>
+            <MainImgWrapper>
+              <MainImg src={data?.photo[selectedImg]} alt="" />
+            </MainImgWrapper>
+          </Left>
+          <Right>
+            <RightContainer>
+              {width > "768" && (
+                <>
+                  <Title>{data?.title}</Title>
+                  <TagWrapper>
+                    {tag.map((tag, index) => (
+                      <Tag key={index}>{tag}</Tag>
+                    ))}
+                  </TagWrapper>
+                  <PriceWrapper>
+                    <PriceContainer>
+                      <PriceInfoSpan>MRP: </PriceInfoSpan>
+                      <CurrencyRupee style={{ transform: "scale(0.8)" }} />
+                      <Price className="price">{data?.cost}</Price>
+                    </PriceContainer>
+                    <PriceSpan>(Also includes all applicable duties)</PriceSpan>
+                  </PriceWrapper>
+                </>
+              )}
 
-          <SizeWrapper>
-            <Header>Select Size:</Header>
-            <SizeContainer>
-              {data?.sizeAvailable?.map((size, index) => (
-                <Size
-                  key={index}
-                  child={selectedSize + 1}
-                  size={size}
-                  onClick={() => setSelectedSize(index)}>
-                  <SizeInfo>U.K {size}</SizeInfo>
-                </Size>
-              ))}
-            </SizeContainer>
-          </SizeWrapper>
+              <ColorWrapper>
+                <Header>Select Color:</Header>
+                <ColorContainer>
+                  {data?.colourAvailable.map((color, index) => (
+                    <Color
+                      key={index}
+                      child={selectedColor + 1}
+                      color={color}
+                      onClick={() => setSelectedColor(index)}
+                    />
+                  ))}
+                </ColorContainer>
+              </ColorWrapper>
 
-          <Button
-            color="cart"
-            onClick={() =>
-              addProductToCart(
-                data,
-                data?.colourAvailable[selectedColor],
-                data?.sizeAvailable[selectedSize]
-              )
-            }>
-            Add to bag
-          </Button>
-          <Button favourite={favourite} onClick={() => wishlistProduct(data)}>
-            Favourite{" "}
-            <FavoriteBorder
-              style={{
-                color: `${favourite ? "red" : "black"}`,
-                transform: "scale(1.2)",
-              }}
-            />
-          </Button>
+              <SizeWrapper>
+                <Header>Select Size:</Header>
+                <SizeContainer>
+                  {data?.sizeAvailable?.map((size, index) => (
+                    <Size
+                      key={index}
+                      child={selectedSize + 1}
+                      size={size}
+                      onClick={() => setSelectedSize(index)}>
+                      <SizeInfo>U.K {size}</SizeInfo>
+                    </Size>
+                  ))}
+                </SizeContainer>
+              </SizeWrapper>
 
-          <Header>Description:</Header>
-          <Description>{data?.description}</Description>
-        </RightContainer>
-      </Right>
-    </ProductWrapper>
+              <Button
+                color="cart"
+                onClick={() =>
+                  addProductToCart(
+                    data,
+                    data?.colourAvailable[selectedColor],
+                    data?.sizeAvailable[selectedSize]
+                  )
+                }>
+                Add to bag
+              </Button>
+              <Button
+                favourite={favourite}
+                onClick={() => wishlistProduct(data)}>
+                Favourite{" "}
+                <FavoriteBorder
+                  style={{
+                    color: `${favourite ? "red" : "black"}`,
+                    transform: "scale(1.2)",
+                  }}
+                />
+              </Button>
+
+              <Header>Description:</Header>
+              <Description>{data?.description}</Description>
+            </RightContainer>
+          </Right>
+        </ProductWrapper>
+      )}
+    </>
   );
 };
 

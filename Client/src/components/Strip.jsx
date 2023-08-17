@@ -38,7 +38,10 @@ const Text = styled.p`
 const Strip = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, wishlist, cart } = useSelector((store) => store);
+
+  const user = useSelector((store) => store.user.user);
+  const cart = useSelector((store) => store.cart);
+  const wishlist = useSelector((store) => store.wishlist);
 
   const saveStateAndLogout = () => {
     const wishlistProductId = wishlist.products.map((product) => product?._id);
@@ -55,7 +58,7 @@ const Strip = () => {
     });
 
     logout(
-      user?.user?._id,
+      user?._id,
       navigate,
       dispatch,
       wishlistProductId,
@@ -67,7 +70,7 @@ const Strip = () => {
   return (
     <Wrapper>
       <OuterContainer>
-        {!user?.user ? (
+        {!user ? (
           <Container>
             <Text> Find a store </Text>
             <Text> | </Text>
@@ -88,7 +91,7 @@ const Strip = () => {
           </Container>
         ) : (
           <Container>
-            <Text> {user?.user?.name} </Text>
+            <Text> {user?.name} </Text>
             <Text> | </Text>
 
             <Text onClick={saveStateAndLogout}>Logout</Text>

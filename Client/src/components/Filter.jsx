@@ -1,16 +1,10 @@
-import React, { useState } from "react";
 import { styled } from "styled-components";
+import React, { useEffect, useState } from "react";
 import { CurrencyRupee } from "@mui/icons-material";
-import useWindowDimensions from "../hooks/useWindowDimensions";
-import {
-  brand,
-  gender,
-  price,
-  type,
-  sizeAvailable,
-  colourAvailable,
-} from "../utils/constant";
 import MultiSelectFilter from "./MultiSelectFilter";
+import { useDispatch, useSelector } from "react-redux";
+import { search } from "../redux/filtersAndSearchSlice";
+import { brand, gender, price, type } from "../utils/constant";
 
 const Wrapper = styled.div`
   top: 0px;
@@ -59,49 +53,25 @@ const CostWrapper = styled.span`
   align-items: center;
 `;
 
-const ButtonWrapper = styled.div`
-  left: 0;
-  bottom: 0px;
-  width: 100%;
-  padding: 10px 0px;
-  position: sticky;
-  background-color: white;
-`;
-
-const ApplyButton = styled.div`
-  width: 100%;
-  display: flex;
-  color: white;
-  font-size: 18px;
-  border-radius: 100px;
-  padding: 20px 0px;
-  align-items: center;
-  justify-content: center;
-  background-color: black;
-  font-family: "Nunito", sans-serif;
-  cursor: pointer;
-`;
-
 const Filter = ({ component }) => {
-  const { width } = useWindowDimensions();
-
+  /* State to maintain Filter Information: */
   const [filter, setFilter] = useState({
     brand: [],
     gender: [],
-    cost: 0,
     type: [],
     colour: [],
     size: [],
   });
 
-  console.log(filter);
-
+  const dispatch = useDispatch();
   const handleFilter = (event) => {
     if (event.target.name === "cost") {
-      setFilter({
-        ...filter,
-        [event.target.name]: parseInt(event.target.value),
-      });
+      dispatch(
+        search({
+          [event.target.name]: parseInt(event.target.value),
+        })
+      );
+
       return;
     }
 
@@ -110,13 +80,35 @@ const Filter = ({ component }) => {
         ...filter,
         [event.target.name]: [...filter[event.target.name], event.target.value],
       });
+
+      dispatch(
+        search({
+          [event.target.name]: [
+            ...filter[event.target.name],
+            event.target.value,
+          ],
+        })
+      );
     } else {
       const arr = filter[event.target.name].filter(
         (val) => val != event.target.value
       );
+
       setFilter({ ...filter, [event.target.name]: arr });
+
+      dispatch(
+        search({
+          [event.target.name]: arr,
+        })
+      );
     }
   };
+
+  useEffect(() => {
+    setFilter({ ...filtersAndSearch });
+  }, []);
+
+  const filtersAndSearch = useSelector((store) => store.filtersAndSearch);
 
   return (
     <Wrapper component={component}>
@@ -129,7 +121,8 @@ const Filter = ({ component }) => {
               name="brand"
               value={val}
               type="checkbox"
-              onClick={handleFilter}
+              onChange={handleFilter}
+              checked={filtersAndSearch?.brand.includes(val)}
             />
             {val}
           </Label>
@@ -145,7 +138,8 @@ const Filter = ({ component }) => {
               name="gender"
               value={val}
               type="checkbox"
-              onClick={handleFilter}
+              onChange={handleFilter}
+              checked={filtersAndSearch?.gender.includes(val)}
             />
             {val}
           </Label>
@@ -161,7 +155,8 @@ const Filter = ({ component }) => {
               name="cost"
               value={val}
               type="radio"
-              onClick={handleFilter}
+              onChange={handleFilter}
+              checked={filtersAndSearch?.cost === val}
             />
             <CostWrapper>
               <CurrencyRupee style={{ transform: "scale(0.7)" }} /> under {val}
@@ -179,7 +174,8 @@ const Filter = ({ component }) => {
               name="type"
               value={val}
               type="checkbox"
-              onClick={handleFilter}
+              onChange={handleFilter}
+              checked={filtersAndSearch?.type.includes(val)}
             />
             {val}
           </Label>
@@ -195,12 +191,6 @@ const Filter = ({ component }) => {
 
       {/* Size */}
       <MultiSelectFilter heading="Size" filter={filter} setFilter={setFilter} />
-
-      {width > 1024 && (
-        <ButtonWrapper>
-          <ApplyButton>Apply</ApplyButton>
-        </ButtonWrapper>
-      )}
     </Wrapper>
   );
 };
