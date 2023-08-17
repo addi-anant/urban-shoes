@@ -11,6 +11,7 @@ import Strip from "./components/Strip";
 import Cart from "./components/Cart";
 import Wishlist from "./components/Wishlist";
 import AddProductForm from "./components/AddProductForm";
+import Order from "./components/Order";
 
 const AppOutlet = () => {
   return (
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
       {
         path: "/wishlist",
         element: <Wishlist />,
+      },
+      {
+        path: "/order",
+        element: <Order />,
       },
       {
         path: "/add-product",

@@ -17,15 +17,17 @@ export const sizeAvailable = [
   "10.5",
   "11",
 ];
-
 export const colourAvailable = [
-  "61677A",
-  "272829",
-  "D3D3D3",
-  "F5F3F4",
-  "333533",
-  "0D1B2A",
-  "0466C8",
+  "000000",
+  "03071E",
+  "14213D",
+  "EF233C",
   "FFFFFF",
-  "DEE2FF",
+  "495057",
+  "343A40",
+  "463F3A",
+  "A9927D",
+  "3C0000",
+  "C97D60",
+  "4895ef",
 ];

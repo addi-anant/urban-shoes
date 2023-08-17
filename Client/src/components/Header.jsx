@@ -78,7 +78,7 @@ const Header = ({ type }) => {
 
         <Link
           style={{ textDecoration: "none", color: "inherit" }}
-          to={type === "header" ? `/search/all` : `/search/nike`}>
+          to={type === "header" ? `/search/All` : `/search/Nike`}>
           <Img
             src={
               type === "header"

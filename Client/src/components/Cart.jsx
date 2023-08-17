@@ -8,11 +8,9 @@ import {
   tablet,
 } from "../utils/responsive";
 import {
-  Add,
   AddCircleOutline,
   CurrencyRupee,
   DeleteOutline,
-  Remove,
   RemoveCircleOutline,
 } from "@mui/icons-material";
 import useWindowDimensions from "../hooks/useWindowDimensions";
@@ -20,13 +18,14 @@ import { Link, useNavigate } from "react-router-dom";
 import Slider from "./Slider";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  clearCart,
   decreaseQuantity,
-  emptyCart,
   increaseQuantity,
   removeFromCart,
 } from "../redux/cartSlice";
 import { axiosInstance } from "../utils/axiosInstance";
 import axios from "axios";
+import useToast from "../hooks/useToast";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -409,8 +408,11 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const toast = useToast();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { width } = useWindowDimensions();
+
   const cart = useSelector((store) => store.cart);
   const { user } = useSelector((store) => store.user);
 
@@ -430,14 +432,20 @@ const Cart = () => {
       : dispatch(decreaseQuantity({ _id, cost, size, colour, quantity }));
   };
 
-  const navigate = useNavigate();
-
   const handlePayment = async () => {
     const key = await axiosInstance.get("/payment/key");
 
     const order = await axiosInstance.post("/payment", {
       amount: cart.cartSummary,
     });
+
+    /* ID for the product bought: */
+    const orderDetail = cart?.products?.map((product) => [
+      product?._id,
+      product?.selectedColour,
+      product?.selectedSize,
+      product?.selectedQuantity,
+    ]);
 
     const options = {
       key: key?.data?.key,
@@ -449,19 +457,22 @@ const Cart = () => {
       order_id: order?.data?.id,
       handler: async function (response) {
         await axiosInstance.post("/payment/verify", {
-          product: cart?.products /* Required -> Colour, Size, Quantity, _id */,
+          orderDetail:
+            orderDetail /* Required -> Colour, Size, Quantity, _id */,
+          userId: user?._id,
           razorpay_order_id: response.razorpay_order_id,
           razorpay_payment_id: response.razorpay_payment_id,
           razorpay_signature: response.razorpay_signature,
         });
 
-        /* Clear Cart and Show Success Message / Navigate to ORDER page: */
-        console.log("payment success.");
-        navigate("/");
+        /* Clear Cart, handle Success Message and Navigate to ORDERS page: */
+        toast.open("Order placed successfully.");
+        dispatch(clearCart());
+        navigate("/order");
       },
       prefill: {
-        name: user.name,
-        email: user.email,
+        name: user?.name,
+        email: user?.email,
       },
       theme: {
         color: "#000000",
@@ -636,7 +647,9 @@ const Cart = () => {
               </Payment>
               <Hr />
             </PaymentWrapper>
-            {width <= 1024 ? null : <Button> Checkout </Button>}
+            {width <= 1024 ? null : (
+              <Button onClick={handlePayment}> Checkout </Button>
+            )}
           </RightWrapper>
 
           {width <= 1024 ? (

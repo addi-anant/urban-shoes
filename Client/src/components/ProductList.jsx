@@ -17,7 +17,6 @@ const OuterWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* transition: all 500ms ease-in-out; */
 `;
 
 const Wrapper = styled.div`
@@ -119,6 +118,8 @@ const ProductList = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  console.log(data);
 
   return (
     <>

@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const razorpayInstance = require("../utils/razorpayInstance");
+const Order = require("../models/Order");
 
 module.exports.getKey = (req, res) => {
   return res.status(200).json({ key: process.env.RAZORPAY_KEY_ID });
@@ -16,15 +17,14 @@ module.exports.pay = async (req, res) => {
   return res.status(200).json(order);
 };
 
-module.exports.verification = (req, res) => {
+module.exports.verification = async (req, res) => {
   const {
-    product,
+    userId,
+    orderDetail,
     razorpay_order_id,
     razorpay_payment_id,
     razorpay_signature,
   } = req.body;
-
-  console.log(product);
 
   /* Payment Verification: */
   const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -38,6 +38,19 @@ module.exports.verification = (req, res) => {
 
   if (isAuthentic) {
     /* Payment Done => Save Information in Database */
+    const orderList = orderDetail.map((order) => {
+      return {
+        userId: userId,
+        product: order[0],
+        colour: order[1],
+        size: order[2],
+        quantity: order[3],
+        razorpayOrderID: razorpay_order_id,
+        razorpayPaymentID: razorpay_payment_id,
+      };
+    });
+
+    await Order.insertMany(orderList);
     return res.status(200).send();
   } else {
     res.status(400).send();

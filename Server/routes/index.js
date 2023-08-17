@@ -9,4 +9,7 @@ router.use("/product", require("./product"));
 // payment route:
 router.use("/payment", require("./payment"));
 
+// order route:
+router.use("/order", require("./order"));
+
 module.exports = router;

@@ -58,8 +58,26 @@ module.exports.search_product = async (req, res) => {
   }
 
   /* Men Product Query: */
+  if (query === "Men") {
+    filter = { ...filter, gender: { $in: ["Men"] } };
+    const product = await Product.find(filter);
+    return res.status(200).json(product);
+  }
+
   /* Kids Product Query: */
+  if (query === "Women") {
+    filter = { ...filter, gender: { $in: ["Women"] } };
+    const product = await Product.find(filter);
+    return res.status(200).json(product);
+  }
+
   /* Women Product Query: */
+  if (query === "Kids") {
+    filter = { ...filter, gender: { $in: ["Kids"] } };
+    const product = await Product.find(filter);
+    console.log(product);
+    return res.status(200).json(product);
+  }
 
   /* General Query: */
   filter = { ...filter, $text: { $search: `${query}` } };
