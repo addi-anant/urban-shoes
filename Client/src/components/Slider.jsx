@@ -90,12 +90,10 @@ const Button = styled.div`
 `;
 
 const Slider = ({ heading }) => {
-  // make an API call based upon the slider component is called from Home or Product.
-
   const { isLoading, error, data } = useQuery({
     queryKey: ["trending"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/product");
+      const response = await axiosInstance.get("/product/trending");
       return response.data;
     },
   });

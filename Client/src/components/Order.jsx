@@ -53,7 +53,7 @@ const Container = styled.div`
   })}
 `;
 
-const Heading = styled.p`
+const Heading = styled.div`
   margin: 0px;
   font-size: 28px;
   font-weight: 500;
@@ -69,7 +69,56 @@ const Heading = styled.p`
   })}
 `;
 
-const ProductInfoWrapper = styled.div``;
+const ProductInfoWrapper = styled.div`
+  min-height: 50vh;
+`;
+
+const SVGContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+const SVG = styled.img`
+  width: 40%;
+  aspect-ratio: 1;
+
+  ${laptop({
+    width: "56%",
+  })}
+
+  ${tablet({
+    width: "70%",
+  })}
+
+  ${mobileXL({
+    width: "70%",
+  })}
+
+  ${mobile({
+    width: "90%",
+  })}
+`;
+
+const Text = styled.div`
+  margin: 0px;
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-family: "Nunito", sans-serif;
+  text-align: center;
+
+  ${mobileXL({
+    fontSize: "20px",
+  })}
+
+  ${mobile({
+    fontSize: "16x",
+  })}
+`;
 
 const Order = () => {
   const { user } = useSelector((store) => store.user);
@@ -92,7 +141,12 @@ const Order = () => {
             {isLoading ? (
               Array(3)
                 .fill("")
-                .map((_, index) => <OrderCardLoader />)
+                .map((_, index) => <OrderCardLoader key={index} />)
+            ) : !data?.length ? (
+              <SVGContainer>
+                <SVG src="https://res.cloudinary.com/additya/image/upload/v1692350656/urban%20shoes/vstlrbaase7nuzno2fdu.png" />
+                <Text>You haven't placed any order, Yet!</Text>
+              </SVGContainer>
             ) : (
               <>
                 {data?.map((info) => (

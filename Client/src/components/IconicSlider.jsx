@@ -96,7 +96,7 @@ const IconicSlider = () => {
   const { isLoading, error, data } = useQuery({
     queryKey: ["iconic"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/product");
+      const response = await axiosInstance.get("/product/iconic");
       return response.data;
     },
   });

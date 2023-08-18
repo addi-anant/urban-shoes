@@ -55,17 +55,78 @@ const WishlistWrapper = styled.div`
   })}
 `;
 
+const SVGContainer = styled.div`
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+const SVG = styled.img`
+  width: 30%;
+  aspect-ratio: 1;
+
+  ${laptop({
+    width: "45%",
+  })}
+
+  ${tablet({
+    width: "60%",
+  })}
+
+  ${mobileXL({
+    width: "70%",
+  })}
+
+  ${mobile({
+    width: "90%",
+  })}
+`;
+
+const Text = styled.p`
+  margin: 0px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-family: "Nunito", sans-serif;
+  text-align: center;
+  color: #414141;
+
+  ${mobileXL({
+    fontSize: "20px",
+  })}
+
+  ${mobile({
+    fontSize: "18px",
+  })};
+`;
+
 const Wishlist = () => {
   const { products } = useSelector((store) => store.wishlist);
   return (
     <Wrapper>
       <Container>
         <Heading>Wishlist</Heading>
-        <WishlistWrapper>
-          {products?.map((product) => (
-            <WishlistCard key={product?._id} info={product} favourite={true} />
-          ))}
-        </WishlistWrapper>
+        <>
+          {!products.length ? (
+            <SVGContainer>
+              <SVG src="https://res.cloudinary.com/additya/image/upload/v1692381362/urban%20shoes/nppbvxm5ec7yo8nflglb.png" />
+              <Text>Your Wishlist is Empty.</Text>
+            </SVGContainer>
+          ) : (
+            <WishlistWrapper>
+              {products?.map((product) => (
+                <WishlistCard
+                  key={product?._id}
+                  info={product}
+                  favourite={true}
+                />
+              ))}
+            </WishlistWrapper>
+          )}
+        </>
       </Container>
     </Wrapper>
   );

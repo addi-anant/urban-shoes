@@ -106,7 +106,7 @@ const ProductTypeWrapper = styled.div`
   flex-wrap: wrap;
 `;
 
-const ProductType = styled.p`
+const ProductType = styled.div`
   margin: 0px;
   font-size: 14px;
   font-family: "Nunito", sans-serif;

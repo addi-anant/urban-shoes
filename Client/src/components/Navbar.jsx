@@ -2,6 +2,7 @@ import {
   FavoriteBorder,
   Search,
   ShoppingBagOutlined,
+  ShoppingCart,
 } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { css, keyframes, styled } from "styled-components";
@@ -213,8 +214,13 @@ const Navbar = () => {
                 to="/cart"
                 style={{ textDecoration: "none", color: "inherit" }}>
                 <Badge badgeContent={cart.length} color="secondary">
-                  <ShoppingBagOutlined />
+                  <ShoppingCart />
                 </Badge>
+              </Link>
+              <Link
+                to="/order"
+                style={{ textDecoration: "none", color: "inherit" }}>
+                <ShoppingBagOutlined />
               </Link>
             </>
           )}

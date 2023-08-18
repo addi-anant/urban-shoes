@@ -10,6 +10,26 @@ module.exports.get_product = async (req, res) => {
   }
 };
 
+module.exports.iconic = async (req, res) => {
+  try {
+    const iconicProduct = await Product.find({ brand: "Nike" }).limit(10);
+    return res.status(200).json(iconicProduct);
+  } catch (Error) {
+    console.log(`Error while fetching Iconic product: ${Error}`);
+    return res.status(500).json(Error);
+  }
+};
+
+module.exports.trending = async (req, res) => {
+  try {
+    const trendingProduct = await Product.find({}).limit(10).sort({ cost: 1 });
+    return res.status(200).json(trendingProduct);
+  } catch (Error) {
+    console.log(`Error while fetching Trending product: ${Error}`);
+    return res.status(500).json(Error);
+  }
+};
+
 module.exports.get_individual_product = async (req, res) => {
   const id = req.params.id;
   try {
@@ -40,7 +60,7 @@ module.exports.add_product = async (req, res) => {
 };
 
 module.exports.search_product = async (req, res) => {
-  const { query } = req.params;
+  const { query, index } = req.params;
   const { brand, gender, type, colour, size, cost } = req.body;
 
   let filter = {};
@@ -53,28 +73,36 @@ module.exports.search_product = async (req, res) => {
 
   /* All Product Query: */
   if (query === "All") {
-    const allProduct = await Product.find(filter);
+    const allProduct = await Product.find(filter)
+      .skip(Number((index - 1) * 6))
+      .limit(Number(6));
     return res.status(200).json(allProduct);
   }
 
   /* Men Product Query: */
   if (query === "Men") {
     filter = { ...filter, gender: { $in: ["Men"] } };
-    const product = await Product.find(filter);
+    const product = await Product.find(filter)
+      .skip(Number((index - 1) * 6))
+      .limit(Number(6));
     return res.status(200).json(product);
   }
 
   /* Kids Product Query: */
   if (query === "Women") {
     filter = { ...filter, gender: { $in: ["Women"] } };
-    const product = await Product.find(filter);
+    const product = await Product.find(filter)
+      .skip(Number((index - 1) * 6))
+      .limit(Number(6));
     return res.status(200).json(product);
   }
 
   /* Women Product Query: */
   if (query === "Kids") {
     filter = { ...filter, gender: { $in: ["Kids"] } };
-    const product = await Product.find(filter);
+    const product = await Product.find(filter)
+      .skip(Number((index - 1) * 6))
+      .limit(Number(6));
     console.log(product);
     return res.status(200).json(product);
   }
@@ -82,6 +110,8 @@ module.exports.search_product = async (req, res) => {
   /* General Query: */
   filter = { ...filter, $text: { $search: `${query}` } };
 
-  const queryOutput = await Product.find(filter);
+  const queryOutput = await Product.find(filter)
+    .skip(Number((index - 1) * 6))
+    .limit(Number(6));
   return res.status(200).json(queryOutput);
 };

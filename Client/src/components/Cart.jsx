@@ -24,8 +24,7 @@ import {
   removeFromCart,
 } from "../redux/cartSlice";
 import { axiosInstance } from "../utils/axiosInstance";
-import axios from "axios";
-import useToast from "../hooks/useToast";
+import { toast } from "react-hot-toast";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -407,11 +406,51 @@ const Button = styled.button`
   }
 `;
 
+const SVGContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+const SVG = styled.img`
+  width: 40%;
+  aspect-ratio: 1;
+
+  ${mobileXL({
+    width: "50%",
+  })}
+
+  ${mobile({
+    width: "70%",
+  })}
+`;
+
+const SVGText = styled.p`
+  margin: 0px;
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-family: "Nunito", sans-serif;
+  text-align: center;
+
+  ${mobileXL({
+    fontSize: "20px",
+  })}
+
+  ${mobile({
+    fontSize: "18px",
+  })}
+`;
+
 const Cart = () => {
-  const toast = useToast();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { width } = useWindowDimensions();
+  const loginPayment = () => toast("Login to proceed for payment.");
+  const orderSuccessful = () => toast("Order completed successfully.");
 
   const cart = useSelector((store) => store.cart);
   const { user } = useSelector((store) => store.user);
@@ -433,6 +472,10 @@ const Cart = () => {
   };
 
   const handlePayment = async () => {
+    if (!user) {
+      loginPayment();
+      return;
+    }
     const key = await axiosInstance.get("/payment/key");
 
     const order = await axiosInstance.post("/payment", {
@@ -466,7 +509,7 @@ const Cart = () => {
         });
 
         /* Clear Cart, handle Success Message and Navigate to ORDERS page: */
-        toast.open("Order placed successfully.");
+        orderSuccessful();
         dispatch(clearCart());
         navigate("/order");
       },
@@ -510,112 +553,123 @@ const Cart = () => {
             )}
 
             <ProductInfoWrapper>
-              {cart?.products?.map((info) => (
-                <React.Fragment
-                  key={`${info?._id}${info?.selectedColour}${info?.selectedSize}${info?.selectedQuantity}`}>
-                  <Product>
-                    <Image src={info?.photo[0]} />
-                    <DetailWrapper>
-                      <Detail>
-                        <TopInfoWrapper>
-                          <Link
-                            to={`/product/${info?._id}`}
-                            style={{
-                              textDecoration: "none",
-                              color: "inherit",
-                            }}>
-                            <HeadingWrapper>
-                              <ProductName>{info?.title}</ProductName>
-                              {width <= 660 ? null : (
-                                <ProductCost>MRP: {info?.cost}</ProductCost>
-                              )}
-                            </HeadingWrapper>
-                          </Link>
-                          <ProductTypeWrapper>
-                            {[info?.brand, ...info?.gender, ...info?.type].map(
-                              (val, index) => (
-                                <ProductType key={index}>{val}</ProductType>
-                              )
-                            )}
-                          </ProductTypeWrapper>
-                        </TopInfoWrapper>
-                        <InfoWrapper>
-                          Color:
-                          <ProductColor color={info?.selectedColour} />
-                        </InfoWrapper>
+              {!cart?.products?.length ? (
+                <SVGContainer>
+                  <SVG src="https://res.cloudinary.com/additya/image/upload/v1692355550/urban%20shoes/ojxpihqnktxexshwn3ts.png" />
+                  <SVGText> Your Cart is Empty!</SVGText>
+                </SVGContainer>
+              ) : (
+                <>
+                  {cart?.products?.map((info) => (
+                    <React.Fragment
+                      key={`${info?._id}${info?.selectedColour}${info?.selectedSize}${info?.selectedQuantity}`}>
+                      <Product>
+                        <Image src={info?.photo[0]} />
+                        <DetailWrapper>
+                          <Detail>
+                            <TopInfoWrapper>
+                              <Link
+                                to={`/product/${info?._id}`}
+                                style={{
+                                  textDecoration: "none",
+                                  color: "inherit",
+                                }}>
+                                <HeadingWrapper>
+                                  <ProductName>{info?.title}</ProductName>
+                                  {width <= 660 ? null : (
+                                    <ProductCost>MRP: {info?.cost}</ProductCost>
+                                  )}
+                                </HeadingWrapper>
+                              </Link>
+                              <ProductTypeWrapper>
+                                {[
+                                  info?.brand,
+                                  ...info?.gender,
+                                  ...info?.type,
+                                ].map((val, index) => (
+                                  <ProductType key={index}>{val}</ProductType>
+                                ))}
+                              </ProductTypeWrapper>
+                            </TopInfoWrapper>
+                            <InfoWrapper>
+                              Color:
+                              <ProductColor color={info?.selectedColour} />
+                            </InfoWrapper>
 
-                        <DropdownWrapper>
-                          <InfoWrapper>
-                            Size:
-                            <ProductSize>{info?.selectedSize}</ProductSize>
-                          </InfoWrapper>
-                          <InfoWrapper>
-                            Quantity:{" "}
-                            <ProductQuantity>
-                              {info?.selectedQuantity}
-                            </ProductQuantity>
-                            <AddCircleOutline
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                productQuantity(
-                                  "increase",
+                            <DropdownWrapper>
+                              <InfoWrapper>
+                                Size:
+                                <ProductSize>{info?.selectedSize}</ProductSize>
+                              </InfoWrapper>
+                              <InfoWrapper>
+                                Quantity:{" "}
+                                <ProductQuantity>
+                                  {info?.selectedQuantity}
+                                </ProductQuantity>
+                                <AddCircleOutline
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() =>
+                                    productQuantity(
+                                      "increase",
+                                      info?._id,
+                                      info?.cost,
+                                      info?.selectedSize,
+                                      info?.selectedColour,
+                                      info?.selectedQuantity
+                                    )
+                                  }
+                                />
+                                <RemoveCircleOutline
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() =>
+                                    productQuantity(
+                                      "decrease",
+                                      info?._id,
+                                      info?.cost,
+                                      info?.selectedSize,
+                                      info?.selectedColour,
+                                      info?.selectedQuantity
+                                    )
+                                  }
+                                />
+                              </InfoWrapper>
+                            </DropdownWrapper>
+                          </Detail>
+                          <UtilityWrapper>
+                            <DeleteOutline
+                              style={{
+                                transform: `scale(${width <= 660 ? 1 : 1.2}`,
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                removeProductFromCart(
                                   info?._id,
                                   info?.cost,
                                   info?.selectedSize,
                                   info?.selectedColour,
                                   info?.selectedQuantity
-                                )
-                              }
+                                );
+                              }}
                             />
-                            <RemoveCircleOutline
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                productQuantity(
-                                  "decrease",
-                                  info?._id,
-                                  info?.cost,
-                                  info?.selectedSize,
-                                  info?.selectedColour,
-                                  info?.selectedQuantity
-                                )
-                              }
-                            />
-                          </InfoWrapper>
-                        </DropdownWrapper>
-                      </Detail>
-                      <UtilityWrapper>
-                        <DeleteOutline
-                          style={{
-                            transform: `scale(${width <= 660 ? 1 : 1.2}`,
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            removeProductFromCart(
-                              info?._id,
-                              info?.cost,
-                              info?.selectedSize,
-                              info?.selectedColour,
-                              info?.selectedQuantity
-                            );
-                          }}
-                        />
 
-                        {width <= 660 ? (
-                          <ProductCost>
-                            MRP:
-                            <CurrencyRupee
-                              style={{ transform: "scale(0.7)" }}
-                            />
-                            {info?.cost}
-                          </ProductCost>
-                        ) : null}
-                      </UtilityWrapper>
-                    </DetailWrapper>
-                  </Product>
-                  {/* </Link> */}
-                  <Hr />
-                </React.Fragment>
-              ))}
+                            {width <= 660 ? (
+                              <ProductCost>
+                                MRP:
+                                <CurrencyRupee
+                                  style={{ transform: "scale(0.7)" }}
+                                />
+                                {info?.cost}
+                              </ProductCost>
+                            ) : null}
+                          </UtilityWrapper>
+                        </DetailWrapper>
+                      </Product>
+                      {/* </Link> */}
+                      <Hr />
+                    </React.Fragment>
+                  ))}
+                </>
+              )}
             </ProductInfoWrapper>
           </LeftWrapper>
 

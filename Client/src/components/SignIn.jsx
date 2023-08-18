@@ -5,7 +5,6 @@ import { SignupSchema } from "../formSchema";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 
 import { Link, useNavigate } from "react-router-dom";
-import { Google } from "@mui/icons-material";
 import { login } from "../utils/authentication";
 import { useDispatch } from "react-redux";
 
@@ -20,8 +19,8 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  width: 60vw;
-  height: 520px;
+  width: 50vw;
+  height: 420px;
   display: flex;
   overflow: hidden;
   background: #fff;
@@ -47,7 +46,7 @@ const Wrapper = styled.div`
 const Left = styled.div`
   flex: 1.6;
   background: #fff;
-  padding: 40px 30px 20px;
+  padding: 50px 30px 20px;
 `;
 
 const Title = styled.p`
@@ -85,54 +84,6 @@ const Input = styled.input`
   outline: 0;
   font-size: 16px;
   padding: 4px 0 0;
-`;
-
-const PartitionWrapper = styled.div`
-  border: none;
-  position: relative;
-  border-top: 1px solid lightgray;
-  margin: 30px 0px 0px 0px;
-`;
-
-const Or = styled.div`
-  top: -18px;
-  z-index: 1;
-  width: 25px;
-  height: 25px;
-  padding: 5px;
-  margin: auto;
-  display: flex;
-  font-size: 14px;
-  position: relative;
-  border-radius: 50%;
-  align-items: center;
-  border: 1px solid lightgray;
-  justify-content: center;
-  background-color: white;
-`;
-
-const GoogleAuthWrapper = styled.button`
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  border: 1px solid lightgray;
-  border-radius: 10px;
-  width: 100%;
-  background-color: white;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
-
-const AuthText = styled.div`
-  font-size: 16px;
-  color: gray;
-  font-weight: bold;
-  padding-left: 15px;
-  font-family: "Nunito", sans-serif;
 `;
 
 const Right = styled.div`
@@ -188,8 +139,6 @@ const SignUp = styled.p`
 `;
 
 const SignIn = () => {
-  const [error, setError] = useState(null);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -255,7 +204,7 @@ const SignIn = () => {
               </InputBlock>
 
               {/* Submit Button */}
-              <Button>Sign up</Button>
+              <Button>Sign in</Button>
             </Form>
             <SignUp>
               Already have an account?{" "}
@@ -265,20 +214,10 @@ const SignIn = () => {
                 Register
               </Link>
             </SignUp>
-
-            <PartitionWrapper>
-              {/* <Divider /> */}
-              <Or>OR</Or>
-            </PartitionWrapper>
-
-            <GoogleAuthWrapper>
-              <Google style={{ color: "#16FF00", transform: "scale(1.2)" }} />
-              <AuthText>Sign In with Google.</AuthText>
-            </GoogleAuthWrapper>
           </Left>
           <Right>
             <Img
-              src="https://images.unsplash.com/photo-1593010932917-92bd21088dee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1965&q=80"
+              src="https://images.unsplash.com/photo-1531310197839-ccf54634509e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=465&q=80"
               alt=""
             />
           </Right>

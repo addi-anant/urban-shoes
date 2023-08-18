@@ -10,8 +10,8 @@ import { axiosInstance } from "../utils/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice";
-import useToast from "../hooks/useToast";
 import ProductDetailLoader from "./Loaders/ProductDetailLoader";
+import { toast } from "react-hot-toast";
 
 const ProductWrapper = styled.div`
   gap: 5%;
@@ -294,6 +294,12 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
 
+  const loginCart = () => toast("Login to add product to Cart.");
+  const productAddToCart = () => toast("Product added to Cart.");
+  const productFavourite = () => toast("Product added to Favourite.");
+  const productUnfavourite = () => toast("Product removed from Favourite.");
+  const loginFavourite = () => toast("Login to add product to Favourite.");
+
   const { isLoading, error, data } = useQuery({
     queryKey: [`${id}`],
     queryFn: async () => {
@@ -309,10 +315,9 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.user);
 
-  const toast = useToast();
   const addProductToCart = (product, colour, size) => {
     if (!user) {
-      toast.open("Login to add product to cart!");
+      loginCart();
       return;
     }
 
@@ -325,7 +330,7 @@ const ProductDetail = () => {
       })
     );
 
-    toast.open("Product added to Cart.");
+    productAddToCart();
   };
 
   const [favourite, setFavourite] = useState(false);
@@ -338,17 +343,17 @@ const ProductDetail = () => {
 
   const wishlistProduct = (product) => {
     if (!user) {
-      toast.open("Login to add product to Favourite!");
+      loginFavourite();
       return;
     }
 
     !favourite
       ? (setFavourite(true),
         dispatch(addToWishlist({ ...product })),
-        toast.open("Product added to Favourite."))
+        productFavourite())
       : (setFavourite(false),
         dispatch(removeFromWishlist({ _id: product?._id })),
-        toast.open("Product removed from Favourite."));
+        productUnfavourite());
   };
 
   const { width } = useWindowDimensions();

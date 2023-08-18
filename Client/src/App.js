@@ -1,4 +1,5 @@
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import SignIn from "./components/SignIn";
 import Registration from "./components/Registeration";
@@ -12,6 +13,7 @@ import Cart from "./components/Cart";
 import Wishlist from "./components/Wishlist";
 import AddProductForm from "./components/AddProductForm";
 import Order from "./components/Order";
+import { useSelector } from "react-redux";
 
 const AppOutlet = () => {
   return (
@@ -20,6 +22,7 @@ const AppOutlet = () => {
       <Navbar />
       <Outlet />
       <Footer />
+      <Toaster />
     </>
   );
 };

@@ -68,7 +68,7 @@ const HeadingWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const ProductInfo = styled.p`
+const ProductInfo = styled.div`
   margin: 0px;
 `;
 

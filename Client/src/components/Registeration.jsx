@@ -27,8 +27,8 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  width: 60vw;
-  height: 600px;
+  width: 56vw;
+  height: 500px;
   display: flex;
   overflow: hidden;
   background: #fff;
@@ -62,15 +62,15 @@ const Title = styled.p`
   font-weight: 400;
   font-size: 42px;
   color: #55311c;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
 `;
 
 const Form = styled.form``;
 
 const InputBlock = styled.div`
   display: flex;
+  margin-top: 10px;
   border-radius: 4px;
-  margin-bottom: 20px;
   flex-direction: column;
   padding: 10px 10px 8px;
   border: 1px solid #ddd;
@@ -94,51 +94,14 @@ const Input = styled.input`
   padding: 4px 0 0;
 `;
 
-const PartitionWrapper = styled.div`
-  border: none;
-  position: relative;
-  border-top: 1px solid lightgray;
-  margin: 30px 0px 0px 0px;
-`;
+const ConditionWrapper = styled.div``;
 
-const Or = styled.div`
-  top: -18px;
-  z-index: 1;
-  width: 25px;
-  height: 25px;
-  padding: 5px;
-  margin: auto;
-  display: flex;
-  font-size: 14px;
-  position: relative;
-  border-radius: 50%;
-  align-items: center;
-  border: 1px solid lightgray;
-  justify-content: center;
-  background-color: white;
-`;
-
-const GoogleAuthWrapper = styled.button`
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  border: 1px solid lightgray;
-  border-radius: 10px;
-  width: 100%;
-  background-color: white;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
-
-const AuthText = styled.div`
-  font-size: 16px;
-  color: gray;
-  font-weight: bold;
-  padding-left: 15px;
+const Text = styled.p`
+  margin: 0px;
+  color: red;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 10px 0px 20px 0px;
   font-family: "Nunito", sans-serif;
 `;
 
@@ -215,10 +178,7 @@ const Registration = () => {
       validationSchema: RegisterationSchema,
       onSubmit: (values, action) => {
         const { name, email, password } = values;
-
-        // Make API Call here:
         register(name, email, password, navigate);
-
         action.resetForm();
       },
     });
@@ -264,6 +224,7 @@ const Registration = () => {
             </InputBlock>
 
             {/* Password: */}
+
             <InputBlock child={errors.password && touched.password ? 3 : null}>
               <Label>Password</Label>
               <Input
@@ -277,10 +238,13 @@ const Registration = () => {
                 onBlur={handleBlur}
               />
             </InputBlock>
+            <ConditionWrapper>
+              <Text>** Min. password length: 6</Text>
+            </ConditionWrapper>
 
             {/* Submit Button */}
             <Button type="submit" onClick={handleSubmit}>
-              Registration
+              Sign up
             </Button>
           </Form>
 
@@ -292,20 +256,10 @@ const Registration = () => {
               Sign In
             </Link>
           </SignUp>
-
-          <PartitionWrapper>
-            {/* <Divider /> */}
-            <Or>OR</Or>
-          </PartitionWrapper>
-
-          <GoogleAuthWrapper>
-            <Google style={{ color: "#16FF00", transform: "scale(1.2)" }} />
-            <AuthText>Sign up with Google.</AuthText>
-          </GoogleAuthWrapper>
         </Left>
         <Right>
           <Img
-            src="https://images.unsplash.com/photo-1556906781-9a412961c28c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80"
+            src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80"
             alt=""
           />
         </Right>

@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { CurrencyRupee } from "@mui/icons-material";
 
+const Wrapper = styled.div``;
+
 const Container = styled.div`
   width: 100%;
   height: max-content;
@@ -48,33 +50,38 @@ const Price = styled.span`
   font-family: "Nunito", sans-serif;
 `;
 
-const Card = ({ info }) => {
-  return (
+const Card = React.forwardRef(({ product }, ref) => {
+  const CardInfo = (
     <>
       <Link
-        to={`/product/${info?._id}`}
+        to={`/product/${product?._id}`}
         style={{ textDecoration: "none", color: "inherit" }}>
         <Container>
           <ImgContainer>
-            <Img alt="product" src={info?.photo[0]} />
+            <Img alt="product" src={product?.photo[0]} />
           </ImgContainer>
 
           {/* Product Information */}
           <InformationContainer>
-            <Header>{info?.title}</Header>
-            <Info>{info.sizeAvailable.length} Size </Info>
-            <Info>{info.colourAvailable.length} Colour </Info>
-            {/* <Info> {trimTitle(info?.title)} </Info> */}
+            <Header>{product?.title}</Header>
+            <Info>{product.sizeAvailable.length} Size </Info>
+            <Info>{product.colourAvailable.length} Colour </Info>
             <Price>
               MRP:
               <CurrencyRupee style={{ transform: "scale(0.7)" }} />
-              {info?.cost}
+              {product?.cost}
             </Price>
           </InformationContainer>
         </Container>
       </Link>
     </>
   );
-};
+
+  return ref ? (
+    <Wrapper ref={ref}>{CardInfo}</Wrapper>
+  ) : (
+    <Wrapper>{CardInfo}</Wrapper>
+  );
+});
 
 export default Card;
