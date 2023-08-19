@@ -7,7 +7,6 @@ import IconicSlider from "./IconicSlider";
 import { styled } from "styled-components";
 import { useDispatch } from "react-redux";
 import { clearFilterAndSearch } from "../redux/filtersAndSearchSlice";
-import { clearCart } from "../redux/cartSlice";
 
 const Wrapper = styled.div`
   width: 100%;

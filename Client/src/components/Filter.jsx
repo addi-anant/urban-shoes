@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
+import CheckboxFilter from "./CheckboxFilter";
 import React, { useEffect, useState } from "react";
-import { CurrencyRupee } from "@mui/icons-material";
 import MultiSelectFilter from "./MultiSelectFilter";
 import { useDispatch, useSelector } from "react-redux";
 import { search } from "../redux/filtersAndSearchSlice";
@@ -15,45 +15,16 @@ const Wrapper = styled.div`
     props.component === "modal" ? "max-content" : "calc(100vh)"};
   scrollbar-width: none;
   -ms-overflow-style: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
 `;
 
-const OptionContainer = styled.div`
-  margin-bottom: 20px;
-`;
-
-const Header = styled.p`
-  margin: 0px;
-  color: #2a2a2a;
-  font-weight: 700;
-  padding-left: 2px;
-  font-size: 18px;
-  font-family: "Nunito", sans-serif;
-`;
-
-const Label = styled.label`
-  gap: 4px;
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  font-family: "Nunito", sans-serif;
-  width: max-content;
-`;
-
-const Checkbox = styled.input`
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-`;
-
-const CostWrapper = styled.span`
-  display: flex;
-  align-items: center;
-`;
-
 const Filter = ({ component }) => {
+  const dispatch = useDispatch();
+  const filtersAndSearch = useSelector((store) => store.filtersAndSearch);
+
   /* State to maintain Filter Information: */
   const [filter, setFilter] = useState({
     brand: [],
@@ -63,7 +34,7 @@ const Filter = ({ component }) => {
     size: [],
   });
 
-  const dispatch = useDispatch();
+  /* Handler For Filter: */
   const handleFilter = (event) => {
     if (event.target.name === "cost") {
       dispatch(
@@ -105,82 +76,43 @@ const Filter = ({ component }) => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setFilter({ ...filtersAndSearch });
   }, []);
-
-  const filtersAndSearch = useSelector((store) => store.filtersAndSearch);
 
   return (
     <Wrapper component={component}>
       {/* Brand: */}
-      <OptionContainer>
-        <Header> Brand: </Header>
-        {brand.map((val, index) => (
-          <Label key={index}>
-            <Checkbox
-              name="brand"
-              value={val}
-              type="checkbox"
-              onChange={handleFilter}
-              checked={filtersAndSearch?.brand.includes(val)}
-            />
-            {val}
-          </Label>
-        ))}
-      </OptionContainer>
+      <CheckboxFilter
+        title={"Brand"}
+        name={"brand"}
+        arr={brand}
+        handleFilter={handleFilter}
+      />
 
       {/* Gender: */}
-      <OptionContainer>
-        <Header> Gender: </Header>
-        {gender.map((val, index) => (
-          <Label key={index}>
-            <Checkbox
-              name="gender"
-              value={val}
-              type="checkbox"
-              onChange={handleFilter}
-              checked={filtersAndSearch?.gender.includes(val)}
-            />
-            {val}
-          </Label>
-        ))}
-      </OptionContainer>
+      <CheckboxFilter
+        title={"Gender"}
+        name={"gender"}
+        arr={gender}
+        handleFilter={handleFilter}
+      />
 
-      {/* Price: */}
-      <OptionContainer>
-        <Header> Cost: </Header>
-        {price.map((val, index) => (
-          <Label key={index}>
-            <Checkbox
-              name="cost"
-              value={val}
-              type="radio"
-              onChange={handleFilter}
-              checked={filtersAndSearch?.cost === val}
-            />
-            <CostWrapper>
-              <CurrencyRupee style={{ transform: "scale(0.7)" }} /> under {val}
-            </CostWrapper>
-          </Label>
-        ))}
-      </OptionContainer>
+      {/* Cost: */}
+      <CheckboxFilter
+        title={"Cost"}
+        name={"cost"}
+        arr={price}
+        handleFilter={handleFilter}
+      />
 
       {/* Type: */}
-      <OptionContainer>
-        <Header> Type: </Header>
-        {type.map((val, index) => (
-          <Label key={index}>
-            <Checkbox
-              name="type"
-              value={val}
-              type="checkbox"
-              onChange={handleFilter}
-              checked={filtersAndSearch?.type.includes(val)}
-            />
-            {val}
-          </Label>
-        ))}
-      </OptionContainer>
+      <CheckboxFilter
+        title={"Type"}
+        name={"type"}
+        arr={type}
+        handleFilter={handleFilter}
+      />
 
       {/* Colour: */}
       <MultiSelectFilter

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { CurrencyRupee } from "@mui/icons-material";
 
@@ -64,7 +63,6 @@ const SliderCard = ({ info }) => {
             <Header>{info?.title}</Header>
             <Info>{info?.sizeAvailable?.length} Size </Info>
             <Info>{info?.colourAvailable?.length} Colour </Info>
-            {/* <Info> {trimTitle(info?.title)} </Info> */}
             <Price>
               MRP:
               <CurrencyRupee style={{ transform: "scale(0.7)" }} />

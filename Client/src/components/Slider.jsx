@@ -1,12 +1,12 @@
 import React, { useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { styled } from "styled-components";
 import SliderCard from "./SliderCard";
-import { mobile, mobileXL, tablet } from "../utils/responsive";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import useWindowDimensions from "../hooks/useWindowDimensions";
+import { styled } from "styled-components";
+import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
 import SliderCardLoader from "./Loaders/SliderCardLoader";
+import useWindowDimensions from "../hooks/useWindowDimensions";
+import { mobile, mobileXL, tablet } from "../utils/responsive";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -90,7 +90,7 @@ const Button = styled.div`
 `;
 
 const Slider = ({ heading }) => {
-  const { isLoading, error, data } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ["trending"],
     queryFn: async () => {
       const response = await axiosInstance.get("/product/trending");

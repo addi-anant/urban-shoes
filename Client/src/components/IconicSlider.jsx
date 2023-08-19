@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import { styled } from "styled-components";
-import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import useWindowDimensions from "../hooks/useWindowDimensions";
 import IconicCard from "./IconicCard";
+import React, { useRef } from "react";
+import { styled } from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
 import IconicCardLoader from "./Loaders/IconicCardLoader";
+import useWindowDimensions from "../hooks/useWindowDimensions";
+import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -92,8 +92,7 @@ const Button = styled.div`
 `;
 
 const IconicSlider = () => {
-  // make an API call based upon the slider component is called from Home or Product.
-  const { isLoading, error, data } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ["iconic"],
     queryFn: async () => {
       const response = await axiosInstance.get("/product/iconic");
@@ -132,6 +131,7 @@ const IconicSlider = () => {
               <KeyboardArrowLeft />
             </Button>
           )}
+
           <SliderWrapper ref={ref}>
             {isLoading ? (
               <>
@@ -149,6 +149,7 @@ const IconicSlider = () => {
               </>
             )}
           </SliderWrapper>
+
           {width > 660 && (
             <Button dir="right" onClick={() => handleScroll("right")}>
               <KeyboardArrowRight />

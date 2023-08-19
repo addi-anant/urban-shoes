@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useFormik } from "formik";
 import styled from "styled-components";
-import { Formik, useFormik } from "formik";
+import React, { useEffect } from "react";
 import { RegisterationSchema } from "../formSchema";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
-
 import { Link, useNavigate } from "react-router-dom";
-import { Google } from "@mui/icons-material";
 import { register } from "../utils/authentication";
+import { signUp } from "../utils/constant";
 
 const Container = styled.div`
   width: 100%;
@@ -258,10 +257,7 @@ const Registration = () => {
           </SignUp>
         </Left>
         <Right>
-          <Img
-            src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80"
-            alt=""
-          />
+          <Img src={signUp} alt="" />
         </Right>
       </Wrapper>
     </Container>

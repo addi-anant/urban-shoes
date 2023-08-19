@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
+import WishlistCard from "./wishlistCard";
 import { useSelector } from "react-redux";
 import { styled } from "styled-components";
+import { EmptyWishlist } from "../utils/constant";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
-import WishlistCard from "./wishlistCard";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -41,12 +42,10 @@ const WishlistWrapper = styled.div`
   })}
 
   ${tablet({
-    border: "1px solid red",
     gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
   })}
 
     ${mobileXL({
-    border: "1px solid blue",
     gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
   })}
 
@@ -104,6 +103,10 @@ const Text = styled.p`
 `;
 
 const Wishlist = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { products } = useSelector((store) => store.wishlist);
   return (
     <Wrapper>
@@ -112,17 +115,13 @@ const Wishlist = () => {
         <>
           {!products.length ? (
             <SVGContainer>
-              <SVG src="https://res.cloudinary.com/additya/image/upload/v1692381362/urban%20shoes/nppbvxm5ec7yo8nflglb.png" />
+              <SVG src={EmptyWishlist} />
               <Text>Your Wishlist is Empty.</Text>
             </SVGContainer>
           ) : (
             <WishlistWrapper>
               {products?.map((product) => (
-                <WishlistCard
-                  key={product?._id}
-                  info={product}
-                  favourite={true}
-                />
+                <WishlistCard key={product?._id} info={product} />
               ))}
             </WishlistWrapper>
           )}

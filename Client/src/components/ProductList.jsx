@@ -1,17 +1,18 @@
-import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 import Card from "./Card";
-import { styled } from "styled-components";
+import Modal from "./Modal";
 import Filter from "./Filter";
-import useWindowDimensions from "../hooks/useWindowDimensions";
+import FilterModal from "./FilterModal";
+import { useSelector } from "react-redux";
+import { search } from "../utils/constant";
+import { styled } from "styled-components";
 import { Tune } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import Modal from "./Modal";
-import SliderCardLoader from "./Loaders/SliderCardLoader";
-import FilterModal from "./FilterModal";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
-import { useSelector } from "react-redux";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import SliderCardLoader from "./Loaders/SliderCardLoader";
+import useWindowDimensions from "../hooks/useWindowDimensions";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 
 const OuterWrapper = styled.div`
   width: 100%;
@@ -165,27 +166,11 @@ const ProductWrapper = styled.div`
 
 const ProductList = () => {
   const { query } = useParams();
-
-  const filtersAndSearch = useSelector((store) => store.filtersAndSearch);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState(false);
+  const filtersAndSearch = useSelector((store) => store.filtersAndSearch);
 
-  const fetchResult = async (pageParam) => {
-    const response = await axiosInstance.post(
-      `/product/search/${query}/${pageParam}`,
-      {
-        ...filtersAndSearch,
-      }
-    );
-
-    return response.data;
-  };
-
+  /* Logic to Fetch Result based upon Query: */
   const {
     fetchNextPage,
     hasNextPage,
@@ -195,7 +180,16 @@ const ProductList = () => {
     refetch,
   } = useInfiniteQuery({
     queryKey: [`"${query}"`],
-    queryFn: ({ pageParam = 1 }) => fetchResult(pageParam),
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await axiosInstance.post(
+        `/product/search/${query}/${pageParam}`,
+        {
+          ...filtersAndSearch,
+        }
+      );
+
+      return response.data;
+    },
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length ? allPages.length + 1 : undefined,
   });
@@ -218,6 +212,7 @@ const ProductList = () => {
     [isFetchingNextPage, fetchNextPage, hasNextPage]
   );
 
+  /* Final Search Output: */
   const searchResult = data?.pages?.map((pg) => {
     return pg?.map((info, index) => {
       return index + 1 === pg.length ? (
@@ -228,10 +223,26 @@ const ProductList = () => {
     });
   });
 
+  /* Skeleton Loader for Product: */
+  const skeletonLoader = (
+    <Container>
+      {Array(6)
+        .fill("")
+        .map((_, index) => (
+          <SliderCardLoader key={index} />
+        ))}
+    </Container>
+  );
+
   /* re-fetch result on filter updation: */
   useEffect(() => {
     refetch();
   }, [filtersAndSearch]);
+
+  /* Scroll to Top: */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <>
@@ -254,35 +265,19 @@ const ProductList = () => {
           {width > 1024 && <Filter />}
           <>
             {isLoading ? (
-              <ProductWrapper>
-                <Container>
-                  {Array(6)
-                    .fill("")
-                    .map((_, index) => (
-                      <SliderCardLoader key={index} />
-                    ))}
-                </Container>
-              </ProductWrapper>
+              <ProductWrapper>{skeletonLoader}</ProductWrapper>
             ) : (
               <>
                 {!searchResult?.[0]?.length ? (
                   <SVGContainer>
-                    <SVG src="https://res.cloudinary.com/additya/image/upload/v1692353166/urban%20shoes/cbvxisa9iezaw6m3ok22.png" />
+                    <SVG src={search} />
                     <Text> Your search does not match any products. </Text>
                     <Text> Please try again. </Text>
                   </SVGContainer>
                 ) : (
                   <ProductWrapper>
                     <Container>{searchResult}</Container>
-                    {isFetchingNextPage && (
-                      <Container>
-                        {Array(6)
-                          .fill("")
-                          .map((_, index) => (
-                            <SliderCardLoader key={index} />
-                          ))}
-                      </Container>
-                    )}
+                    {isFetchingNextPage && skeletonLoader}
                   </ProductWrapper>
                 )}
               </>

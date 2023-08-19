@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Slider from "./Slider";
 import { useSelector } from "react-redux";
 import { styled } from "styled-components";
@@ -13,6 +13,7 @@ import {
 } from "../utils/responsive";
 import OrderCard from "./OrderCard";
 import OrderCardLoader from "./Loaders/OrderCardLoader";
+import { EmptyOrder } from "../utils/constant";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -121,9 +122,13 @@ const Text = styled.div`
 `;
 
 const Order = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { user } = useSelector((store) => store.user);
 
-  const { data, error, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["order", user?._id],
     queryFn: async () => {
       const response = await axiosInstance.get(`/order/${user?._id}`);
@@ -144,7 +149,7 @@ const Order = () => {
                 .map((_, index) => <OrderCardLoader key={index} />)
             ) : !data?.length ? (
               <SVGContainer>
-                <SVG src="https://res.cloudinary.com/additya/image/upload/v1692350656/urban%20shoes/vstlrbaase7nuzno2fdu.png" />
+                <SVG src={EmptyOrder} />
                 <Text>You haven't placed any order, Yet!</Text>
               </SVGContainer>
             ) : (

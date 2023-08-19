@@ -1,5 +1,3 @@
-import React from "react";
-import { styled } from "styled-components";
 import {
   laptop,
   laptopXL,
@@ -7,8 +5,11 @@ import {
   mobileXL,
   tablet,
 } from "../utils/responsive";
-import useWindowDimensions from "../hooks/useWindowDimensions";
 import { Link } from "react-router-dom";
+import OrderUtility from "./OrderUtility";
+import { styled } from "styled-components";
+import OrderHeaderInfo from "./OrderHeaderInfo";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 const ProductWrapper = styled.div``;
 
@@ -58,71 +59,6 @@ const Detail = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-`;
-
-const TopInfoWrapper = styled.div``;
-
-const HeadingWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const ProductName = styled.p`
-  margin: 0px;
-  font-size: 19px;
-  font-weight: 700;
-  font-family: "Nunito", sans-serif;
-
-  ${mobileXL({
-    fontSize: "17px",
-  })}
-
-  ${mobile({
-    fontSize: "17px",
-  })}
-`;
-
-const ProductCost = styled.p`
-  margin: 0px;
-  font-size: 19px;
-  font-weight: 700;
-  font-family: "Nunito", sans-serif;
-  display: flex;
-  align-items: center;
-
-  ${mobileXL({
-    fontSize: "17px",
-  })}
-
-  ${mobile({
-    fontSize: "15px",
-  })}
-`;
-
-const ProductTypeWrapper = styled.div`
-  gap: 10px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-`;
-
-const ProductType = styled.div`
-  margin: 0px;
-  font-size: 14px;
-  font-family: "Nunito", sans-serif;
-  color: #4d4d4d;
-  font-weight: 500;
-  background-color: #f5f5f5;
-  border-radius: 50px;
-  padding: 2px 4px;
-
-  ${mobileXL({
-    fontSize: "12px",
-  })}
-
-  ${mobile({
-    fontSize: "12px",
-  })}
 `;
 
 const InfoWrapper = styled.div`
@@ -182,49 +118,6 @@ const ProductInfo = styled.p`
   })}
 `;
 
-const UtilityWrapper = styled.div`
-  gap: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-
-  ${tablet({
-    alignItems: "flex-start",
-    flexDirection: "column",
-  })}
-
-  ${mobileXL({
-    alignItems: "flex-start",
-    flexDirection: "column",
-  })}
-
-  ${mobile({
-    alignItems: "flex-end",
-    flexWrap: "wrap",
-    marginTop: "10px",
-  })}
-`;
-
-const UtilityInfoWrapper = styled.div``;
-
-const InfoHeading = styled.p`
-  margin: 0px;
-  padding: 0px;
-  color: black;
-  font-weight: bold;
-`;
-
-const BuyAgain = styled.button`
-  border: none;
-  color: white;
-  font-size: 15px;
-  cursor: pointer;
-  padding: 10px 14px;
-  border-radius: 100px;
-  background-color: black;
-  font-family: "Nunito", sans-serif;
-`;
-
 const Hr = styled.hr`
   background-color: #d2d2d2;
   border: none;
@@ -250,33 +143,7 @@ const OrderCard = ({ info }) => {
 
         <DetailWrapper>
           <Detail>
-            <TopInfoWrapper>
-              <Link
-                to={`/product/${info?.product?._id}`}
-                style={{
-                  textDecoration: "none",
-                  color: "inherit",
-                }}>
-                <HeadingWrapper>
-                  <ProductName>{info?.product?.title}</ProductName>
-                  {width <= 480 ? null : (
-                    <ProductCost>MRP: {info?.product?.cost}</ProductCost>
-                  )}
-                </HeadingWrapper>
-              </Link>
-
-              {width > 660 && (
-                <ProductTypeWrapper>
-                  {[
-                    info?.product?.brand,
-                    ...info?.product?.gender,
-                    ...info?.product?.type,
-                  ].map((val, index) => (
-                    <ProductType key={index}>{val}</ProductType>
-                  ))}
-                </ProductTypeWrapper>
-              )}
-            </TopInfoWrapper>
+            <OrderHeaderInfo info={info} />
 
             {/* Colour: */}
             <InfoWrapper>
@@ -298,62 +165,10 @@ const OrderCard = ({ info }) => {
             </DropdownWrapper>
           </Detail>
 
-          {width > 480 && (
-            <UtilityWrapper>
-              <UtilityInfoWrapper>
-                <InfoWrapper>
-                  <InfoHeading>Order_ID:</InfoHeading>
-                  <ProductInfo>{info?.razorpayOrderID}</ProductInfo>
-                </InfoWrapper>
-                <InfoWrapper>
-                  <InfoHeading>Payment_ID:</InfoHeading>
-                  <ProductInfo>{info?.razorpayPaymentID}</ProductInfo>
-                </InfoWrapper>
-                <InfoWrapper>
-                  <InfoHeading>Total Amount Paid:</InfoHeading>
-                  <ProductInfo>
-                    {info?.quantity * info?.product?.cost}
-                  </ProductInfo>
-                </InfoWrapper>
-              </UtilityInfoWrapper>
-              <Link
-                to={`/product/${info?.product?._id}`}
-                style={{
-                  textDecoration: "none",
-                  color: "inherit",
-                }}>
-                <BuyAgain>Order Again</BuyAgain>
-              </Link>
-            </UtilityWrapper>
-          )}
+          {width > 480 && <OrderUtility info={info} />}
         </DetailWrapper>
       </Product>
-      {width <= 480 && (
-        <UtilityWrapper>
-          <UtilityInfoWrapper>
-            <InfoWrapper>
-              <InfoHeading>Order_ID:</InfoHeading>
-              <ProductInfo>{info?.razorpayOrderID}</ProductInfo>
-            </InfoWrapper>
-            <InfoWrapper>
-              <InfoHeading>Payment_ID:</InfoHeading>
-              <ProductInfo>{info?.razorpayPaymentID}</ProductInfo>
-            </InfoWrapper>
-            <InfoWrapper>
-              <InfoHeading>Total Amount Paid:</InfoHeading>
-              <ProductInfo>{info?.quantity * info?.product?.cost}</ProductInfo>
-            </InfoWrapper>
-          </UtilityInfoWrapper>
-          <Link
-            to={`/product/${info?.product?._id}`}
-            style={{
-              textDecoration: "none",
-              color: "inherit",
-            }}>
-            <BuyAgain>Order Again</BuyAgain>
-          </Link>
-        </UtilityWrapper>
-      )}
+      {width <= 480 && <OrderUtility info={info} />}
 
       <Hr />
     </ProductWrapper>

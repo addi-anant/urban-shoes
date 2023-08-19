@@ -1,17 +1,20 @@
-import React, { useEffect } from "react";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
+import ProductSize from "./ProductSize";
 import { styled } from "styled-components";
-import { mobile, mobileXL, tablet } from "../utils/responsive";
-import { CurrencyRupee, Favorite, FavoriteBorder } from "@mui/icons-material";
-import useWindowDimensions from "../hooks/useWindowDimensions";
+import ProductHeader from "./ProductHeader";
+import ProductColour from "./ProductColour";
+import ProductBanner from "./ProductBanner";
 import { useParams } from "react-router-dom";
+import { addToCart } from "../redux/cartSlice";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../redux/cartSlice";
-import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice";
+import { FavoriteBorder } from "@mui/icons-material";
+import { mobile, mobileXL, tablet } from "../utils/responsive";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 import ProductDetailLoader from "./Loaders/ProductDetailLoader";
-import { toast } from "react-hot-toast";
+import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice";
 
 const ProductWrapper = styled.div`
   gap: 5%;
@@ -58,44 +61,6 @@ const Left = styled.div`
   })}
 `;
 
-const SideImgWrapper = styled.div`
-  flex: 1;
-  ${mobile({
-    display: "grid",
-    gridGap: "10px",
-    gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))",
-  })}
-`;
-
-const SideImg = styled.img`
-  width: 100%;
-  cursor: pointer;
-  aspect-ratio: 1;
-  object-fit: cover;
-  margin-bottom: 10px;
-  overflow: hidden;
-  border-radius: 10px;
-  &:nth-child(${(props) => props.child}) {
-    outline: 2px solid black;
-    filter: brightness(85%);
-  }
-
-  ${mobile({
-    width: "100%",
-  })}
-`;
-
-const MainImgWrapper = styled.div`
-  flex: 5;
-`;
-
-const MainImg = styled.img`
-  width: 100%;
-  aspect-ratio: 0.8;
-  object-fit: cover;
-  border-radius: 20px;
-`;
-
 const Right = styled.div`
   flex: 1;
   width: 100%;
@@ -131,125 +96,9 @@ const RightContainer = styled.div`
   })}
 `;
 
-const Title = styled.p`
-  margin: 0px;
-  font-size: 28px;
-  font-weight: 500;
-  font-family: "Open Sans", sans-serif;
-`;
-
-const TagWrapper = styled.div`
-  gap: 8px;
-  display: flex;
-  padding: 5px 0px;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const Tag = styled.span`
-  color: #4d4d4d;
-  border-radius: 100px;
-  padding: 4px 6px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: "Nunito", sans-serif;
-  background-color: #f5f5f5;
-`;
-
-const PriceWrapper = styled.div`
-  display: flex;
-  padding: 15px 0px;
-  flex-direction: column;
-  align-items: flex-start;
-`;
-
-const PriceContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Price = styled.span`
-  font-size: 18px;
-  font-weight: 500;
-  font-family: "Nunito", sans-serif;
-`;
-
-const PriceInfoSpan = styled.span`
-  font-size: 18px;
-  font-weight: 700;
-  padding-left: 4px;
-  font-family: "Nunito", sans-serif;
-`;
-
-const PriceSpan = styled.span`
-  color: gray;
-  font-size: 18px;
-  padding-left: 4px;
-  font-family: "Nunito", sans-serif;
-`;
-
-const ColorWrapper = styled.div`
-  padding-bottom: 20px;
-`;
-
 const Header = styled.span`
   font-size: 18px;
   font-weight: 700;
-  padding-left: 4px;
-  font-family: "Nunito", sans-serif;
-`;
-
-const ColorContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-
-  grid-gap: 20px;
-  padding: 5px 0px 0px 4px;
-`;
-
-const Color = styled.span`
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  border-radius: 50%;
-  border: 1px solid gray;
-  background-color: #${(props) => props.color};
-  &:nth-child(${(props) => props.child}) {
-    outline: 2px solid black;
-  }
-`;
-
-const SizeWrapper = styled.div`
-  padding-bottom: 20px;
-`;
-
-const SizeContainer = styled.div`
-  display: grid;
-  grid-gap: 10px;
-  padding: 5px 0px 0px 4px;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-`;
-
-const Size = styled.span`
-  height: 50px;
-  cursor: pointer;
-  border: 1px solid lightgray;
-  border-radius: 2px;
-  background-color: #${(props) => props.color};
-  &:nth-child(${(props) => props.child}) {
-    outline: 2px solid black;
-  }
-`;
-
-const SizeInfo = styled.div`
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 500;
   padding-left: 4px;
   font-family: "Nunito", sans-serif;
 `;
@@ -264,7 +113,11 @@ const Button = styled.button`
   border-radius: 100px;
   background-color: ${(props) => (props.color === "cart" ? "black" : "white")};
   color: ${(props) =>
-    props.color === "cart" ? "white" : props.favourite ? "red" : "black"};
+    props.color === "cart"
+      ? "white"
+      : props.favourite === "true"
+      ? "red"
+      : "black"};
   font-family: "Nunito", sans-serif;
   font-weight: 600;
   font-size: 18px;
@@ -272,7 +125,7 @@ const Button = styled.button`
   border: ${(props) =>
     props.color === "cart"
       ? "1px solid black"
-      : props.favourite
+      : props.favourite === "true"
       ? "2px solid red"
       : "2px solid black"};
   cursor: pointer;
@@ -288,19 +141,29 @@ const Description = styled.p`
 `;
 
 const ProductDetail = () => {
+  // Hook and Redux variable:
   const { id } = useParams();
+  const dispatch = useDispatch();
   const [tag, setTag] = useState([]);
+  const { width } = useWindowDimensions();
+  const { user } = useSelector((store) => store.user);
+  const wishlist = useSelector((store) => store.wishlist);
+
+  // State Variable:
+  const [favourite, setFavourite] = useState(false);
   const [selectedImg, setSelectedImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
 
+  // Toast Notification:
   const loginCart = () => toast("Login to add product to Cart.");
   const productAddToCart = () => toast("Product added to Cart.");
   const productFavourite = () => toast("Product added to Favourite.");
   const productUnfavourite = () => toast("Product removed from Favourite.");
   const loginFavourite = () => toast("Login to add product to Favourite.");
 
-  const { isLoading, error, data } = useQuery({
+  // Fetch Product Info based upon ID:
+  const { isLoading, data } = useQuery({
     queryKey: [`${id}`],
     queryFn: async () => {
       const response = await axiosInstance.get(`/product/${id}`);
@@ -312,9 +175,13 @@ const ProductDetail = () => {
     },
   });
 
-  const dispatch = useDispatch();
-  const { user } = useSelector((store) => store.user);
+  // Handler to check if product is already marked as Favourite:
+  const isFavouriteProduct = (id) => {
+    wishlist?.products?.filter((product) => product._id === id).length &&
+      setFavourite(true);
+  };
 
+  // Add Product to Cart Handler:
   const addProductToCart = (product, colour, size) => {
     if (!user) {
       loginCart();
@@ -333,14 +200,7 @@ const ProductDetail = () => {
     productAddToCart();
   };
 
-  const [favourite, setFavourite] = useState(false);
-  const wishlist = useSelector((store) => store.wishlist);
-
-  const isFavouriteProduct = (id) => {
-    wishlist?.products?.filter((product) => product._id === id).length &&
-      setFavourite(true);
-  };
-
+  // Add product to Favourite Handler:
   const wishlistProduct = (product) => {
     if (!user) {
       loginFavourite();
@@ -356,101 +216,51 @@ const ProductDetail = () => {
         productUnfavourite());
   };
 
-  const { width } = useWindowDimensions();
-
   return (
     <>
       {isLoading ? (
-        <>
-          <ProductDetailLoader />
-        </>
+        <ProductDetailLoader />
       ) : (
         <ProductWrapper>
+          {/* Product Heading Info: */}
           {width <= "768" && (
-            <>
-              <Title>{data?.title}</Title>
-              <TagWrapper>
-                {tag?.map((tag, index) => (
-                  <Tag key={index}>{tag}</Tag>
-                ))}
-              </TagWrapper>
-              <PriceWrapper>
-                <PriceContainer>
-                  <PriceInfoSpan>MRP: </PriceInfoSpan>
-                  <CurrencyRupee style={{ transform: "scale(0.8)" }} />
-                  <Price className="price">{data?.cost}</Price>
-                </PriceContainer>
-                <PriceSpan>(Also includes all applicable duties)</PriceSpan>
-              </PriceWrapper>
-            </>
+            <ProductHeader title={data?.title} tag={tag} cost={data?.cost} />
           )}
 
           <Left>
-            <SideImgWrapper>
-              {data?.photo.map((img, index) => (
-                <SideImg
-                  key={index}
-                  child={selectedImg + 1}
-                  src={data?.photo[index]}
-                  alt=""
-                  onMouseEnter={() => setSelectedImg(index)}
-                />
-              ))}
-            </SideImgWrapper>
-            <MainImgWrapper>
-              <MainImg src={data?.photo[selectedImg]} alt="" />
-            </MainImgWrapper>
+            <ProductBanner
+              photo={data?.photo}
+              selectedImg={selectedImg}
+              setSelectedImg={setSelectedImg}
+            />
           </Left>
+
           <Right>
             <RightContainer>
+              {/* Product Heading Info: */}
               {width > "768" && (
-                <>
-                  <Title>{data?.title}</Title>
-                  <TagWrapper>
-                    {tag.map((tag, index) => (
-                      <Tag key={index}>{tag}</Tag>
-                    ))}
-                  </TagWrapper>
-                  <PriceWrapper>
-                    <PriceContainer>
-                      <PriceInfoSpan>MRP: </PriceInfoSpan>
-                      <CurrencyRupee style={{ transform: "scale(0.8)" }} />
-                      <Price className="price">{data?.cost}</Price>
-                    </PriceContainer>
-                    <PriceSpan>(Also includes all applicable duties)</PriceSpan>
-                  </PriceWrapper>
-                </>
+                <ProductHeader
+                  title={data?.title}
+                  tag={tag}
+                  cost={data?.cost}
+                />
               )}
 
-              <ColorWrapper>
-                <Header>Select Color:</Header>
-                <ColorContainer>
-                  {data?.colourAvailable.map((color, index) => (
-                    <Color
-                      key={index}
-                      child={selectedColor + 1}
-                      color={color}
-                      onClick={() => setSelectedColor(index)}
-                    />
-                  ))}
-                </ColorContainer>
-              </ColorWrapper>
+              {/* Product Colour Options: */}
+              <ProductColour
+                colourAvailable={data?.colourAvailable}
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+              />
 
-              <SizeWrapper>
-                <Header>Select Size:</Header>
-                <SizeContainer>
-                  {data?.sizeAvailable?.map((size, index) => (
-                    <Size
-                      key={index}
-                      child={selectedSize + 1}
-                      size={size}
-                      onClick={() => setSelectedSize(index)}>
-                      <SizeInfo>U.K {size}</SizeInfo>
-                    </Size>
-                  ))}
-                </SizeContainer>
-              </SizeWrapper>
+              {/* Product Size Options: */}
+              <ProductSize
+                sizeAvailable={data?.sizeAvailable}
+                selectedSize={selectedSize}
+                setSelectedSize={setSelectedSize}
+              />
 
+              {/* Add to Cart Button: */}
               <Button
                 color="cart"
                 onClick={() =>
@@ -462,10 +272,12 @@ const ProductDetail = () => {
                 }>
                 Add to bag
               </Button>
+
+              {/* Add to Favourite Button: */}
               <Button
-                favourite={favourite}
+                favourite={favourite.toString()}
                 onClick={() => wishlistProduct(data)}>
-                Favourite{" "}
+                Favourite
                 <FavoriteBorder
                   style={{
                     color: `${favourite ? "red" : "black"}`,
@@ -474,6 +286,7 @@ const ProductDetail = () => {
                 />
               </Button>
 
+              {/* Product Description: */}
               <Header>Description:</Header>
               <Description>{data?.description}</Description>
             </RightContainer>

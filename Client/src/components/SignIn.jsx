@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import { useFormik } from "formik";
+import styled from "styled-components";
+import React, { useEffect } from "react";
 import { SignupSchema } from "../formSchema";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../utils/authentication";
 import { useDispatch } from "react-redux";
+import { login } from "../utils/authentication";
+import { Link, useNavigate } from "react-router-dom";
+import { signIn } from "../utils/constant";
 
 const Container = styled.div`
   width: 100%;
@@ -157,10 +158,7 @@ const SignIn = () => {
       validationSchema: SignupSchema,
       onSubmit: (values, action) => {
         const { email, password } = values;
-
-        // Make API Call here:
         login(email, password, navigate, dispatch);
-
         action.resetForm();
       },
     });
@@ -206,6 +204,7 @@ const SignIn = () => {
               {/* Submit Button */}
               <Button>Sign in</Button>
             </Form>
+
             <SignUp>
               Already have an account?{" "}
               <Link
@@ -215,11 +214,9 @@ const SignIn = () => {
               </Link>
             </SignUp>
           </Left>
+
           <Right>
-            <Img
-              src="https://images.unsplash.com/photo-1531310197839-ccf54634509e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=465&q=80"
-              alt=""
-            />
+            <Img src={signIn} />
           </Right>
         </Wrapper>
       </Container>

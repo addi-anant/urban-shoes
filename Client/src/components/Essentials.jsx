@@ -1,6 +1,7 @@
 import { styled } from "styled-components";
 import { mobile, mobileXL } from "../utils/responsive";
 import { Link } from "react-router-dom";
+import { Kids, Men, Women } from "../utils/constant";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -86,24 +87,25 @@ const Essentials = () => {
         <Heading> The Essentials </Heading>
         <Container>
           <Card>
-            <Img src="https://images.unsplash.com/photo-1579758629938-03607ccdbaba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" />
+            <Img src={Men} />
             <Link
               style={{ textDecoration: "none", color: "inherit" }}
               to={`/search/Men`}>
               <Button> Men's </Button>
             </Link>
           </Card>
-          <Card>
-            <Img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=499&q=80" />
 
+          <Card>
+            <Img src={Women} />
             <Link
               style={{ textDecoration: "none", color: "inherit" }}
               to={`/search/Women`}>
               <Button> Women's </Button>
             </Link>
           </Card>
+
           <Card>
-            <Img src="https://images.unsplash.com/photo-1600679472829-3044539ce8ed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" />
+            <Img src={Kids} />
             <Link
               style={{ textDecoration: "none", color: "inherit" }}
               to={`/search/Kids`}>

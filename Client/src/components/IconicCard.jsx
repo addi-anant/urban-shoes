@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 const Container = styled.div`
   width: 100%;
@@ -30,8 +29,6 @@ const Header = styled.p`
 `;
 
 const IconicCard = ({ info }) => {
-  const dispatch = useDispatch();
-
   return (
     <>
       <Link

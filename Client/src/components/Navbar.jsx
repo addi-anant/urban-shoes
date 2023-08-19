@@ -146,9 +146,11 @@ const Navbar = () => {
   const wishlist = useSelector((store) => store.wishlist.products);
 
   const navigate = useNavigate();
-  const [query, setQuery] = useState();
+  const [query, setQuery] = useState("");
 
   const invokeSearch = (event) => {
+    if (query === "") return;
+
     if (event.key === "Enter") {
       setIsTyping(false);
       navigate(`/search/${query}`);
@@ -165,7 +167,7 @@ const Navbar = () => {
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           {!isTyping && (
             <Img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/320px-Logo_NIKE.svg.png"
+              src="https://res.cloudinary.com/additya/image/upload/v1692425970/urban%20shoes/yl1jjgwk1nglg7fphnhb.png"
               typing={isTyping?.toString()}
             />
           )}
