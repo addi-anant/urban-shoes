@@ -103,7 +103,6 @@ module.exports.search_product = async (req, res) => {
     const product = await Product.find(filter)
       .skip(Number((index - 1) * 6))
       .limit(Number(6));
-    console.log(product);
     return res.status(200).json(product);
   }
 

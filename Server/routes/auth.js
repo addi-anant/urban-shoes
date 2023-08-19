@@ -8,9 +8,6 @@ router.post("/login", auth.login);
 // Register:
 router.post("/register", auth.register);
 
-// Google:
-router.post("/google", auth.google);
-
 // Logout:
 router.post("/logout", auth.logout);
 

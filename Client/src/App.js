@@ -13,7 +13,7 @@ import Cart from "./components/Cart";
 import Wishlist from "./components/Wishlist";
 import AddProductForm from "./components/AddProductForm";
 import Order from "./components/Order";
-import { useSelector } from "react-redux";
+import Authorized from "./components/Authorized";
 
 const AppOutlet = () => {
   return (
@@ -62,11 +62,23 @@ const router = createBrowserRouter([
       },
       {
         path: "/order",
-        element: <Order />,
+        element: <Authorized />,
+        children: [
+          {
+            path: "",
+            element: <Order />,
+          },
+        ],
       },
       {
         path: "/add-product",
-        element: <AddProductForm />,
+        element: <Authorized />,
+        children: [
+          {
+            path: "",
+            element: <AddProductForm />,
+          },
+        ],
       },
     ],
   },

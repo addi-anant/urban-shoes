@@ -142,6 +142,7 @@ const Navbar = () => {
   const { width } = useWindowDimensions();
   const [isTyping, setIsTyping] = useState();
 
+  const { user } = useSelector((store) => store.user);
   const cart = useSelector((store) => store.cart.products);
   const wishlist = useSelector((store) => store.wishlist.products);
 
@@ -149,14 +150,14 @@ const Navbar = () => {
   const [query, setQuery] = useState("");
 
   const invokeSearch = (event) => {
+    event.key === "Escape" && setIsTyping(false);
+
     if (query === "") return;
 
     if (event.key === "Enter") {
       setIsTyping(false);
       navigate(`/search/${query}`);
     }
-
-    event.key === "Escape" && setIsTyping(false);
 
     event.key !== "Enter" && event.key !== "Escape" && setIsTyping(true);
   };
@@ -212,13 +213,15 @@ const Navbar = () => {
                   <FavoriteBorder />
                 </Badge>
               </Link>
-              <Link
-                to="/cart"
-                style={{ textDecoration: "none", color: "inherit" }}>
-                <Badge badgeContent={cart.length} color="secondary">
-                  <ShoppingCart />
-                </Badge>
-              </Link>
+              {user && (
+                <Link
+                  to="/cart"
+                  style={{ textDecoration: "none", color: "inherit" }}>
+                  <Badge badgeContent={cart.length} color="secondary">
+                    <ShoppingCart />
+                  </Badge>
+                </Link>
+              )}
               <Link
                 to="/order"
                 style={{ textDecoration: "none", color: "inherit" }}>
