@@ -39,13 +39,7 @@ module.exports.login = async (req, res) => {
   const { password, ...userInfo } = user._doc;
 
   /* Return the required data */
-  return res
-    .cookie("accessToken", accessToken, {
-      domain: "https://urban-hb0x.onrender.com/",
-      sameSite: "none",
-    })
-    .status(200)
-    .send(userInfo);
+  return res.cookie("accessToken", accessToken).status(200).send(userInfo);
 };
 
 // Register:
