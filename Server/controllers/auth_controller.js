@@ -41,7 +41,8 @@ module.exports.login = async (req, res) => {
   /* Return the required data */
   return res
     .cookie("accessToken", accessToken, {
-      domain: ".onrender.com",
+      domain: "https://urban-hb0x.onrender.com/",
+      sameSite: "none",
     })
     .status(200)
     .send(userInfo);
@@ -73,7 +74,7 @@ module.exports.register = async (req, res) => {
     return res.status(200).send("user created successfully.");
   } catch (Error) {
     console.log(`Error creating user: ${Error}`);
-    return res.status(500).json(error);
+    return res.status(500).json(Error);
   }
 };
 
