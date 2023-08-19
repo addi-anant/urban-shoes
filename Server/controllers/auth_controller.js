@@ -42,7 +42,6 @@ module.exports.login = async (req, res) => {
   return res
     .cookie("accessToken", accessToken, {
       domain: ".onrender.com",
-      secure: true,
     })
     .status(200)
     .send(userInfo);
