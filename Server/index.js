@@ -9,7 +9,11 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://urban.onrender.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://urban.onrender.com",
+      "https://urban-hb0x.onrender.com/",
+    ],
     credentials: true,
   })
 );
