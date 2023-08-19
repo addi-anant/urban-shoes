@@ -5,12 +5,11 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 
 const app = express();
-
 dotenv.config();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://urban.onrender.com"],
     credentials: true,
   })
 );
@@ -28,6 +27,7 @@ mongoose
 app.use("/", require("./routes/index"));
 
 /* Server: */
-app.listen("5000", () => {
-  console.log("The server is up and running on port: 5000");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`The server is up and running on port: ${PORT}`);
 });

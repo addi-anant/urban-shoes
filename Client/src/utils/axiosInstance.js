@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/",
+  baseURL: "https://urbanAPI.onrender.com/",
 });
 
 axiosInstance.defaults.withCredentials = true;
