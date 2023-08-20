@@ -28,6 +28,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://urban-hb0x.onrender.com"],
+    credentials: true,
+  })
+);
+
 app.use(express.json()); // Form Input.
 app.use(cookieParser()); // Handle Cookie.
 app.use(express.urlencoded({ extended: true }));
