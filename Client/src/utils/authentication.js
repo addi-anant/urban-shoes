@@ -4,7 +4,14 @@ import { clearCart, storeCart } from "../redux/cartSlice";
 import { clearWishlist, storeWishlist } from "../redux/wishlistSlice";
 
 // Register:
-export const register = async (name, email, password, navigate) => {
+export const register = async (
+  name,
+  email,
+  password,
+  navigate,
+  registerFailure,
+  registerSuccess
+) => {
   try {
     await axiosInstance.post("auth/register", {
       name,
@@ -12,14 +19,23 @@ export const register = async (name, email, password, navigate) => {
       password,
     });
 
+    registerSuccess();
     navigate("/signin");
   } catch (Error) {
+    registerFailure();
     console.log(`Register Failure Error: ${Error}`);
   }
 };
 
 // Login:
-export const login = async (email, password, navigate, dispatch) => {
+export const login = async (
+  email,
+  password,
+  navigate,
+  dispatch,
+  loginError,
+  loginSuccess
+) => {
   try {
     const userInfo = await axiosInstance.post("auth/login", {
       email,
@@ -47,8 +63,10 @@ export const login = async (email, password, navigate, dispatch) => {
     dispatch(storeWishlist(wishlist));
     dispatch(storeCart({ cartInfo, cartSummary }));
 
+    loginSuccess();
     navigate("/");
   } catch (Error) {
+    loginError();
     console.log(`Register Failure Error: ${Error}`);
   }
 };
@@ -60,7 +78,8 @@ export const logout = async (
   dispatch,
   wishlistProductId,
   cartProductId,
-  cartSummary
+  cartSummary,
+  signOut
 ) => {
   try {
     await axiosInstance.post("/auth/logout", {
@@ -74,6 +93,7 @@ export const logout = async (
     dispatch(clearCart());
     dispatch(clearWishlist());
 
+    signOut();
     navigate("/");
   } catch (Error) {
     console.log(`Logout Failure Error: ${Error}`);

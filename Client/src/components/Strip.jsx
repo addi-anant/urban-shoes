@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { logout } from "../utils/authentication";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -42,6 +43,7 @@ const Strip = () => {
   const user = useSelector((store) => store.user.user);
   const cart = useSelector((store) => store.cart);
   const wishlist = useSelector((store) => store.wishlist);
+  const signOut = () => toast("Logged out successfully.");
 
   const saveStateAndLogout = () => {
     const wishlistProductId = wishlist.products.map((product) => product?._id);
@@ -63,7 +65,8 @@ const Strip = () => {
       dispatch,
       wishlistProductId,
       cartProductId,
-      cart?.cartSummary
+      cart?.cartSummary,
+      signOut
     );
   };
 

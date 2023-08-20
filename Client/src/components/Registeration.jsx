@@ -6,6 +6,7 @@ import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
 import { Link, useNavigate } from "react-router-dom";
 import { register } from "../utils/authentication";
 import { signUp } from "../utils/constant";
+import { toast } from "react-hot-toast";
 
 const Container = styled.div`
   width: 100%;
@@ -170,6 +171,10 @@ const Registration = () => {
   };
 
   const navigate = useNavigate();
+  const registerFailure = () =>
+    toast("Error while registering, Please try again!");
+  const registerSuccess = () =>
+    toast("Registeration successfull, Please Login.");
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
@@ -177,7 +182,14 @@ const Registration = () => {
       validationSchema: RegisterationSchema,
       onSubmit: (values, action) => {
         const { name, email, password } = values;
-        register(name, email, password, navigate);
+        register(
+          name,
+          email,
+          password,
+          navigate,
+          registerFailure,
+          registerSuccess
+        );
         action.resetForm();
       },
     });

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import React, { useEffect } from "react";
 import { SignupSchema } from "../formSchema";
 import { laptop, mobile, mobileXL, tablet } from "../utils/responsive";
+import { toast } from "react-hot-toast";
 
 import { useDispatch } from "react-redux";
 import { login } from "../utils/authentication";
@@ -151,6 +152,8 @@ const SignIn = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loginSuccess = () => toast("Logged in successfully.");
+  const loginError = () => toast("Invalid username or password!");
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
@@ -158,7 +161,7 @@ const SignIn = () => {
       validationSchema: SignupSchema,
       onSubmit: (values, action) => {
         const { email, password } = values;
-        login(email, password, navigate, dispatch);
+        login(email, password, navigate, dispatch, loginError, loginSuccess);
         action.resetForm();
       },
     });

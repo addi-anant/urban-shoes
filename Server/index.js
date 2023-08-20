@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 dotenv.config();
 
+/* CORS Header: */
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
@@ -26,13 +27,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
-app.use(
-  cors({
-    origin: "https://urban-hb0x.onrender.com",
-    credentials: true,
-  })
-);
 
 app.use(express.json()); // Form Input.
 app.use(cookieParser()); // Handle Cookie.
