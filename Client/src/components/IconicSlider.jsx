@@ -87,7 +87,7 @@ const Button = styled.div`
   align-items: center;
   justify-content: center;
   background-color: white;
-  left: ${(props) => (props.dir === "left" ? "10px" : "calc(100% - 60px)")};
+  left: ${(props) => (props.dir === "right" ? "calc(100% - 60px)" : "10px")};
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 `;
 
@@ -127,7 +127,7 @@ const IconicSlider = () => {
         <Heading> Always Iconic </Heading>
         <Container>
           {width > 660 && (
-            <Button dir="left" onClick={() => handleScroll("left")}>
+            <Button onClick={() => handleScroll("left")}>
               <KeyboardArrowLeft />
             </Button>
           )}
