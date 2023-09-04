@@ -11,7 +11,7 @@ dotenv.config();
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://urban-hb0x.onrender.com"
+    "https://urban-shoes.vercel.app/"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -30,7 +30,11 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://urban-hb0x.onrender.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://urban-hb0x.onrender.com",
+      "https://urban-shoes.vercel.app/",
+    ],
     credentials: true,
   })
 );
