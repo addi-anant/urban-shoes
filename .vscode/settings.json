@@ -1,0 +1,9 @@
+{
+  "appService.zipIgnorePattern": [
+    "node_modules{,/**}",
+    ".vscode{,/**}",
+    ".github{,/**}"
+  ],
+  "appService.deploySubpath": "server",
+  "appService.defaultWebAppToDeploy": "/subscriptions/d9a2ef68-3db4-4844-b5a6-a04e78080f65/resourceGroups/voyance/providers/Microsoft.Web/sites/voyance"
+}
