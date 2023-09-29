@@ -209,7 +209,7 @@ const Navbar = () => {
               <Link
                 to="/wishlist"
                 style={{ textDecoration: "none", color: "inherit" }}>
-                <Badge badgeContent={wishlist.length} color="secondary">
+                <Badge badgeContent={wishlist?.length} color="secondary">
                   <FavoriteBorder />
                 </Badge>
               </Link>
@@ -217,7 +217,7 @@ const Navbar = () => {
               <Link
                 to="/cart"
                 style={{ textDecoration: "none", color: "inherit" }}>
-                <Badge badgeContent={cart.length} color="secondary">
+                <Badge badgeContent={cart?.length} color="secondary">
                   <ShoppingCartOutlined />
                 </Badge>
               </Link>

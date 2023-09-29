@@ -30,11 +30,7 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://urban-hb0x.onrender.com",
-      "https://urban-shoes.vercel.app",
-    ],
+    origin: ["http://localhost:3000", "https://urban-shoes.vercel.app"],
     credentials: true,
   })
 );
